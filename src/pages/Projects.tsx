@@ -4,7 +4,7 @@ import Header from '../components/Layout/Header';
 import KanbanColumn from '../components/Projects/KanbanColumn';
 import { useApp } from '../contexts/AppContext';
 import { Plus, Filter, Search } from 'lucide-react';
-import Button from '../components/UI/Button';
+import { Button } from '../components/ui/button';
 
 const Projects = () => {
   const { tasks } = useApp();
@@ -56,7 +56,7 @@ const Projects = () => {
             </button>
           </div>
           
-          <Button variant="primary" size="sm">
+          <Button className="bg-blue-500 hover:bg-blue-600 text-white">
             <Plus className="w-4 h-4 mr-2" />
             Nueva Tarea
           </Button>

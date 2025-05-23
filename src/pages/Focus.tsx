@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Header from '../components/Layout/Header';
 import CircularTimer from '../components/Focus/CircularTimer';
-import Button from '../components/UI/Button';
+import { Button } from '../components/ui/button';
 import { useApp } from '../contexts/AppContext';
 import { useFocusTimer } from '../hooks/useFocusTimer';
 import { Play, Pause, Square, Coffee, Target } from 'lucide-react';
@@ -131,11 +131,9 @@ const Focus = () => {
 
             <div className="pt-4">
               <Button
-                variant="primary"
-                size="lg"
-                fullWidth
                 disabled={!selectedTask || !selectedIdentity}
                 onClick={handleStartSession}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg"
               >
                 <Play className="w-5 h-5 mr-2" />
                 Iniciar Sesión de 25 Minutos
@@ -179,9 +177,7 @@ const Focus = () => {
         <div className="grid grid-cols-3 gap-4 mb-6">
           {!isActive || isPaused ? (
             <Button
-              variant="primary"
-              size="lg"
-              fullWidth
+              className="bg-blue-500 hover:bg-blue-600 text-white"
               onClick={isPaused ? resumeTimer : startTimer}
             >
               <Play className="w-5 h-5 mr-1" />
@@ -189,10 +185,9 @@ const Focus = () => {
             </Button>
           ) : (
             <Button
-              variant="secondary"
-              size="lg"
-              fullWidth
+              variant="outline"
               onClick={pauseTimer}
+              className="bg-gray-700 text-white hover:bg-gray-600"
             >
               <Pause className="w-5 h-5 mr-1" />
               Pausar
@@ -200,19 +195,16 @@ const Focus = () => {
           )}
           
           <Button
-            variant="secondary"
-            size="lg"
-            fullWidth
+            variant="outline"
             onClick={handleTakeBreak}
+            className="bg-gray-700 text-white hover:bg-gray-600"
           >
             <Coffee className="w-5 h-5 mr-1" />
             Descanso
           </Button>
           
           <Button
-            variant="danger"
-            size="lg"
-            fullWidth
+            variant="destructive"
             onClick={handleStopSession}
           >
             <Square className="w-5 h-5 mr-1" />

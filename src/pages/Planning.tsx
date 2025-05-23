@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import Header from '../components/Layout/Header';
-import TextArea from '../components/UI/TextArea';
-import Button from '../components/UI/Button';
+import { Textarea } from '../components/ui/textarea';
+import { Button } from '../components/ui/button';
 import { Clock, Users, Briefcase, PenTool, CheckCircle, Sun, Moon } from 'lucide-react';
 
 const Planning = () => {
@@ -76,11 +76,12 @@ const Planning = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 ¿Qué tienes en mente hoy?
               </label>
-              <TextArea
+              <Textarea
                 placeholder="Comparte tus pensamientos, ideas o preocupaciones para el día..."
                 value={morningThoughts}
                 onChange={(e) => setMorningThoughts(e.target.value)}
                 rows={3}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
               />
             </div>
             
@@ -88,11 +89,12 @@ const Planning = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 ¿Cuáles son tus prioridades para hoy?
               </label>
-              <TextArea
+              <Textarea
                 placeholder="Lista las 3 cosas más importantes que quieres lograr hoy..."
                 value={priorities}
                 onChange={(e) => setPriorities(e.target.value)}
                 rows={3}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
               />
             </div>
           </div>
@@ -110,11 +112,12 @@ const Planning = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 ¿Cómo fue tu día?
               </label>
-              <TextArea
+              <Textarea
                 placeholder="Reflexiona sobre los logros, desafíos y aprendizajes del día..."
                 value={eveningReflection}
                 onChange={(e) => setEveningReflection(e.target.value)}
                 rows={3}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
               />
             </div>
             
@@ -122,11 +125,12 @@ const Planning = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">
                 Reflexión sobre tu equipo interno
               </label>
-              <TextArea
+              <Textarea
                 placeholder="¿Cómo interactuaron tus diferentes identidades hoy? ¿Qué funcionó bien?"
                 value={teamReflection}
                 onChange={(e) => setTeamReflection(e.target.value)}
                 rows={3}
+                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
               />
             </div>
           </div>
@@ -159,10 +163,8 @@ const Planning = () => {
         {/* Guardar */}
         <div className="pt-4">
           <Button
-            variant="primary"
-            size="lg"
-            fullWidth
             onClick={handleSave}
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
           >
             Guardar Reflexiones
           </Button>

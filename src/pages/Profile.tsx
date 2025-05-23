@@ -1,7 +1,7 @@
 
 import React from 'react';
 import Header from '../components/Layout/Header';
-import Button from '../components/UI/Button';
+import { Button } from '../components/ui/button';
 import { useApp } from '../contexts/AppContext';
 import { User, Mail, Settings, LogOut, Shield, Bell, HelpCircle } from 'lucide-react';
 
@@ -40,7 +40,7 @@ const Profile = () => {
               <Mail className="w-4 h-4 mr-2" />
               <span className="text-sm">{currentUser?.email || 'usuario@zeofyou.com'}</span>
             </div>
-            <Button variant="secondary" size="sm">
+            <Button variant="outline" size="sm" className="bg-gray-700 text-white hover:bg-gray-600">
               Editar Perfil
             </Button>
           </div>
@@ -128,9 +128,8 @@ const Profile = () => {
         {/* Cerrar Sesión */}
         <section className="pt-4">
           <Button
-            variant="danger"
-            size="lg"
-            fullWidth
+            variant="destructive"
+            className="w-full"
             onClick={logout}
           >
             <LogOut className="w-5 h-5 mr-2" />
