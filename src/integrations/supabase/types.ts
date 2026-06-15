@@ -14,7 +14,300 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          description: string
+          icon: string
+          id: string
+          name: string
+          rarity: string
+          xp_reward: number
+        }
+        Insert: {
+          description: string
+          icon?: string
+          id: string
+          name: string
+          rarity?: string
+          xp_reward?: number
+        }
+        Update: {
+          description?: string
+          icon?: string
+          id?: string
+          name?: string
+          rarity?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
+      daily_metrics: {
+        Row: {
+          avg_energy: number
+          created_at: string
+          date: string
+          focus_minutes: number
+          id: string
+          missions_completed: number
+          top_identity_id: string | null
+          user_id: string
+        }
+        Insert: {
+          avg_energy?: number
+          created_at?: string
+          date: string
+          focus_minutes?: number
+          id?: string
+          missions_completed?: number
+          top_identity_id?: string | null
+          user_id: string
+        }
+        Update: {
+          avg_energy?: number
+          created_at?: string
+          date?: string
+          focus_minutes?: number
+          id?: string
+          missions_completed?: number
+          top_identity_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daily_metrics_top_identity_id_fkey"
+            columns: ["top_identity_id"]
+            isOneToOne: false
+            referencedRelation: "identities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      focus_sessions: {
+        Row: {
+          completed_at: string
+          created_at: string
+          duration_minutes: number
+          id: string
+          identity_id: string | null
+          mission_id: string | null
+          notes: string | null
+          pomodoros_completed: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string
+          created_at?: string
+          duration_minutes: number
+          id?: string
+          identity_id?: string | null
+          mission_id?: string | null
+          notes?: string | null
+          pomodoros_completed?: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          created_at?: string
+          duration_minutes?: number
+          id?: string
+          identity_id?: string | null
+          mission_id?: string | null
+          notes?: string | null
+          pomodoros_completed?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "focus_sessions_identity_id_fkey"
+            columns: ["identity_id"]
+            isOneToOne: false
+            referencedRelation: "identities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "focus_sessions_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      identities: {
+        Row: {
+          avatar: string | null
+          color: string
+          created_at: string
+          description: string | null
+          energy: number
+          id: string
+          name: string
+          role: string
+          specialty: string | null
+          status: Database["public"]["Enums"]["identity_status"]
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar?: string | null
+          color?: string
+          created_at?: string
+          description?: string | null
+          energy?: number
+          id?: string
+          name: string
+          role: string
+          specialty?: string | null
+          status?: Database["public"]["Enums"]["identity_status"]
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar?: string | null
+          color?: string
+          created_at?: string
+          description?: string | null
+          energy?: number
+          id?: string
+          name?: string
+          role?: string
+          specialty?: string | null
+          status?: Database["public"]["Enums"]["identity_status"]
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      missions: {
+        Row: {
+          assigned_identity_id: string | null
+          category: string | null
+          created_at: string
+          description: string | null
+          due_date: string | null
+          id: string
+          is_primary: boolean
+          priority: Database["public"]["Enums"]["mission_priority"]
+          status: Database["public"]["Enums"]["mission_status"]
+          title: string
+          updated_at: string
+          user_id: string
+          xp_reward: number
+        }
+        Insert: {
+          assigned_identity_id?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_primary?: boolean
+          priority?: Database["public"]["Enums"]["mission_priority"]
+          status?: Database["public"]["Enums"]["mission_status"]
+          title: string
+          updated_at?: string
+          user_id: string
+          xp_reward?: number
+        }
+        Update: {
+          assigned_identity_id?: string | null
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          due_date?: string | null
+          id?: string
+          is_primary?: boolean
+          priority?: Database["public"]["Enums"]["mission_priority"]
+          status?: Database["public"]["Enums"]["mission_status"]
+          title?: string
+          updated_at?: string
+          user_id?: string
+          xp_reward?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "missions_assigned_identity_id_fkey"
+            columns: ["assigned_identity_id"]
+            isOneToOne: false
+            referencedRelation: "identities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          last_active_at: string | null
+          level: number
+          onboarding_completed: boolean
+          preferences: Json
+          streak_days: number
+          updated_at: string
+          xp: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          last_active_at?: string | null
+          level?: number
+          onboarding_completed?: boolean
+          preferences?: Json
+          streak_days?: number
+          updated_at?: string
+          xp?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          last_active_at?: string | null
+          level?: number
+          onboarding_completed?: boolean
+          preferences?: Json
+          streak_days?: number
+          updated_at?: string
+          xp?: number
+        }
+        Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +316,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      identity_status: "active" | "resting" | "paused"
+      mission_priority: "low" | "medium" | "high"
+      mission_status: "pending" | "in_progress" | "completed" | "archived"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +445,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      identity_status: ["active", "resting", "paused"],
+      mission_priority: ["low", "medium", "high"],
+      mission_status: ["pending", "in_progress", "completed", "archived"],
+    },
   },
 } as const
