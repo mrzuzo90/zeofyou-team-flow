@@ -14,6 +14,7 @@ import { Play, Pause, RotateCcw, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
 import { cn } from "@/lib/utils";
+import { resolvePersona } from "@/lib/personas";
 
 export default function Focus() {
   const { data: identities = [] } = useIdentities();
