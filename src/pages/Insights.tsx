@@ -9,8 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { LineChart, Line, ResponsiveContainer, Tooltip, XAxis, YAxis, CartesianGrid, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, BarChart, Bar } from "recharts";
 import { getColor } from "@/lib/zeofyou";
 import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
+import { FocusHeatmap } from "@/components/Insights/FocusHeatmap";
 
 export default function Insights() {
   const { data: sessions = [] } = useFocusSessions(200);
@@ -112,6 +113,14 @@ export default function Insights() {
           </ResponsiveContainer>
         </GlassCard>
       </div>
+
+      <GlassCard className="mt-5 p-5">
+        <h3 className="mb-4 inline-flex items-center gap-2 font-display font-bold">
+          <Calendar className="h-4 w-4 text-primary" /> Mapa de focus (últimas 26 semanas)
+        </h3>
+        <FocusHeatmap sessions={sessions} />
+      </GlassCard>
+
 
       <GlassCard className="mt-5 p-5" glow="emerald">
         <div className="flex items-start justify-between gap-3">

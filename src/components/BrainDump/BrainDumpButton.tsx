@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Brain, Lightbulb, AlertCircle, StickyNote, Target, Loader2, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,12 @@ export function BrainDumpButton() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<Item[] | null>(null);
+
+  useEffect(() => {
+    const open = () => setOpen(true);
+    window.addEventListener("zeofyou:brain-dump", open);
+    return () => window.removeEventListener("zeofyou:brain-dump", open);
+  }, []);
 
   const classify = async () => {
     if (!text.trim()) return;

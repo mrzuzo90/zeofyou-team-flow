@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
-import { Flame, Sparkles } from "lucide-react";
+import { Flame, Sparkles, Search, MessageCircle } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { XPBar } from "@/components/UI/XPBar";
 import { ModeSwitcher } from "@/components/Mode/ModeSwitcher";
 
-export const TopBar = ({ title, subtitle }: { title: string; subtitle?: string }) => {
+type Props = {
+  title: string;
+  subtitle?: string;
+  onOpenPalette?: () => void;
+  onOpenCoach?: () => void;
+};
+
+export const TopBar = ({ title, subtitle, onOpenPalette, onOpenCoach }: Props) => {
   const { data: profile } = useProfile();
   const nav = useNavigate();
   return (
@@ -16,6 +23,26 @@ export const TopBar = ({ title, subtitle }: { title: string; subtitle?: string }
           <h1 className="font-display text-lg font-bold leading-tight md:text-xl truncate">{title}</h1>
           {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
         </div>
+        {onOpenPalette && (
+          <button
+            onClick={onOpenPalette}
+            aria-label="Buscar (⌘K)"
+            className="hidden md:inline-flex h-9 items-center gap-2 rounded-full bg-card/60 px-3 text-xs text-muted-foreground hover:bg-card transition-colors"
+          >
+            <Search className="h-3.5 w-3.5" />
+            <span>Buscar…</span>
+            <kbd className="ml-2 rounded bg-muted/60 px-1.5 py-0.5 text-[10px] font-mono">⌘K</kbd>
+          </button>
+        )}
+        {onOpenCoach && (
+          <button
+            onClick={onOpenCoach}
+            aria-label="Hablar con el coach"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+          >
+            <MessageCircle className="h-4 w-4" />
+          </button>
+        )}
         {profile && (
           <div className="flex items-center gap-2 md:gap-3">
             <ModeSwitcher />
