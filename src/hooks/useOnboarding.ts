@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMutation } from "@tanstack/react-query";
+import { inferContextFromCategory } from "@/lib/modes";
 
 export type OnboardingAnswers = {
   name: string;
