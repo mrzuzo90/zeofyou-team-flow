@@ -230,6 +230,8 @@ export type Database = {
           energy: number
           id: string
           name: string
+          persona: string | null
+          preferences: Json
           role: string
           specialty: string | null
           status: Database["public"]["Enums"]["identity_status"]
@@ -246,6 +248,8 @@ export type Database = {
           energy?: number
           id?: string
           name: string
+          persona?: string | null
+          preferences?: Json
           role: string
           specialty?: string | null
           status?: Database["public"]["Enums"]["identity_status"]
@@ -262,6 +266,8 @@ export type Database = {
           energy?: number
           id?: string
           name?: string
+          persona?: string | null
+          preferences?: Json
           role?: string
           specialty?: string | null
           status?: Database["public"]["Enums"]["identity_status"]
