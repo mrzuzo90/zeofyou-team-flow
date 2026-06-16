@@ -26,6 +26,7 @@ export const Layout = ({ children, title, subtitle }: { children: ReactNode; tit
       <PrivacyShield />
     </div>
   </SidebarProvider>
-);
+  );
+};
 
 export default Layout;
