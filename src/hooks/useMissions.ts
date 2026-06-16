@@ -61,6 +61,12 @@ export const useCreateMission = () => {
         category: input.category ?? null,
         xp_reward: input.xp_reward ?? 50,
         status: input.status ?? "pending",
+        context: input.context ?? null,
+        kind: input.kind ?? "task",
+        horizon: input.horizon ?? null,
+        target_minutes: input.target_minutes ?? null,
+        progress_mode: input.progress_mode ?? "manual",
+        progress: input.progress ?? 0,
       } as any);
       if (error) throw error;
     },
