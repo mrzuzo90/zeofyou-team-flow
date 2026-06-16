@@ -140,7 +140,7 @@ export default function Missions() {
               </Button>
             )}
           </div>
-          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(m.id)}>
+          <Button size="icon" aria-label={`Eliminar misión ${m.title}`} variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(m.id)}>
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>
