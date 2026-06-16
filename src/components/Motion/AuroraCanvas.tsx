@@ -119,11 +119,31 @@ export function AuroraCanvas() {
     const uA = gl.getUniformLocation(program, "uA");
     const uB = gl.getUniformLocation(program, "uB");
     const uC = gl.getUniformLocation(program, "uC");
+    const uBg = gl.getUniformLocation(program, "uBg");
+    const uMix = gl.getUniformLocation(program, "uMix");
 
     // Paleta aurora — violeta / verde / azul
     gl.uniform3f(uA, 0.658, 0.545, 0.980); // #a78bfa
     gl.uniform3f(uB, 0.290, 0.870, 0.502); // #4ade80
     gl.uniform3f(uC, 0.231, 0.510, 0.965); // #3b82f6
+
+    const applyTheme = () => {
+      const light = document.documentElement.dataset.theme === "light";
+      if (light) {
+        gl.uniform3f(uBg, 0.97, 0.975, 0.99);
+        gl.uniform1f(uMix, 0.18);
+        canvas.style.opacity = "0.55";
+        canvas.style.mixBlendMode = "multiply";
+      } else {
+        gl.uniform3f(uBg, 0.06, 0.065, 0.10);
+        gl.uniform1f(uMix, 0.55);
+        canvas.style.opacity = "0.9";
+        canvas.style.mixBlendMode = "normal";
+      }
+    };
+    applyTheme();
+    const themeObs = new MutationObserver(applyTheme);
+    themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "data-mode"] });
 
     let mx = 0.5, my = 0.5;
     let tmx = 0.5, tmy = 0.5;
@@ -168,10 +188,24 @@ export function AuroraCanvas() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("visibilitychange", onVis);
+      themeObs.disconnect();
       gl.deleteProgram(program);
       gl.deleteBuffer(buf);
     };
   }, [reduced, touch]);
+
+  if (reduced) {
+    return <div className="aurora-bg" aria-hidden />;
+  }
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden
+      className="pointer-events-none fixed inset-0 z-0 h-full w-full"
+    />
+  );
+}
 
   if (reduced) {
     return <div className="aurora-bg" aria-hidden />;
