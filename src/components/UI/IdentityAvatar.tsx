@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { getColor } from "@/lib/zeofyou";
 import {
   personaCSSVars,
-  personaFontClass,
+  personaFontStyle,
   resolvePersona,
   type IdentityLike,
   type PersonaPreset,
