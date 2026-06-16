@@ -349,7 +349,9 @@ export default function Missions() {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
+
 
       {primary && (
         <section className="mb-8">
