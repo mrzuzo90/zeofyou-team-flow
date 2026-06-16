@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { statusLabel } from "@/lib/zeofyou";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { getMode } from "@/lib/modes";
+import { TwoMinWidget } from "@/components/Dashboard/TwoMinWidget";
 
 export default function Dashboard() {
   const nav = useNavigate();
