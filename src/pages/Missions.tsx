@@ -179,6 +179,19 @@ export default function Missions() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="space-y-1.5">
+                <Label>Contexto / modo</Label>
+                <Select value={form.context || "none"} onValueChange={(v) => setForm({ ...form, context: (v === "none" ? "" : v) as any })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Cualquier modo</SelectItem>
+                    <SelectItem value="work">Trabajo</SelectItem>
+                    <SelectItem value="home">Casa</SelectItem>
+                    <SelectItem value="family">Familia</SelectItem>
+                    <SelectItem value="travel">Viaje</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <label className="flex items-center gap-2 text-sm">
                 <input type="checkbox" checked={form.is_primary} onChange={(e) => setForm({ ...form, is_primary: e.target.checked })} className="h-4 w-4 rounded accent-primary" />
                 Marcar como misión principal
