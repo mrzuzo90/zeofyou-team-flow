@@ -11,13 +11,21 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Target, Timer, AlertTriangle, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { statusLabel } from "@/lib/zeofyou";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { getMode } from "@/lib/modes";
 
 export default function Dashboard() {
   const nav = useNavigate();
   const { data: profile } = useProfile();
-  const { data: identities = [] } = useIdentities();
-  const { data: missions = [] } = useMissions();
+  const { data: allIdentities = [] } = useIdentities();
+  const { data: allMissions = [] } = useMissions();
   const { data: sessions = [] } = useFocusSessions(20);
+  const { mode } = useCurrentMode();
+  const currentMode = getMode(mode);
+
+  const inMode = (ctx: string | null) => mode === "none" || !ctx || ctx === mode;
+  const identities = allIdentities.filter((i) => inMode(i.context));
+  const missions = allMissions.filter((m) => inMode(m.context));
 
   const primary = missions.find((m) => m.is_primary && m.status !== "completed" && m.status !== "archived");
   const activeIdentities = identities.filter((i) => i.status === "active");
