@@ -127,7 +127,28 @@ export default function Missions() {
 
   return (
     <Layout title="Misiones" subtitle="Una principal, las demás esperan su turno">
-      <div className="mb-6 flex justify-end">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {filterByMode ? (
+            <>
+              <span>Mostrando misiones de modo <span className="font-semibold text-foreground">{getMode(mode).label}</span></span>
+              {hiddenCount > 0 && (
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(true)}>
+                  Ver todas ({hiddenCount} ocultas)
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <span>Mostrando todas las misiones</span>
+              {mode !== "none" && (
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(false)}>
+                  Filtrar por modo actual
+                </Button>
+              )}
+            </>
+          )}
+        </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild><Button className="gap-2 bg-gradient-emerald text-primary-foreground"><Plus className="h-4 w-4" /> Nueva misión</Button></DialogTrigger>
           <DialogContent>
