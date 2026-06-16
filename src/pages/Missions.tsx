@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Layout from "@/components/Layout/Layout";
 import { GlassCard } from "@/components/UI/GlassCard";
 import { Button } from "@/components/ui/button";
@@ -7,8 +8,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Star, Lock, Trash2, Check, Play, Pause } from "lucide-react";
+import { Plus, Star, Lock, Trash2, Check, Play, Pause, Sparkles } from "lucide-react";
 import { useMissions, useCreateMission, useUpdateMission, useDeleteMission, Mission } from "@/hooks/useMissions";
+import { useCreateMilestone } from "@/hooks/useMilestones";
 import { useIdentities } from "@/hooks/useIdentities";
 import { useAddXp } from "@/hooks/useProfile";
 import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
@@ -19,6 +21,10 @@ import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { ContextBadge } from "@/components/Mode/ContextBadge";
 import { MissionProgress } from "@/components/Missions/MissionProgress";
 import { getMode, type ModeKey } from "@/lib/modes";
+import { celebrate } from "@/lib/confetti";
+import { MISSION_TEMPLATES, type MissionTemplate } from "@/data/missionTemplates";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
