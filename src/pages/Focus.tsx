@@ -14,7 +14,7 @@ import { Play, Pause, RotateCcw, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
 import { cn } from "@/lib/utils";
-import { resolvePersona } from "@/lib/personas";
+import { resolvePersona, personaFontClass } from "@/lib/personas";
 
 export default function Focus() {
   const { data: identities = [] } = useIdentities();
@@ -128,7 +128,7 @@ export default function Focus() {
                   <div className="mb-3"><IdentityAvatar identity={activeIdentity} name={activeIdentity.name} status={activeIdentity.status} /></div>
                 )}
                 <div
-                  className={cn("text-6xl font-bold tabular-nums", running && "drop-shadow-[0_0_20px_hsl(var(--primary)/0.6)]", preset ? `font-[${preset.font === "playfair" ? "Playfair_Display" : preset.font === "cormorant" ? "Cormorant_Garamond" : preset.font === "jetbrains" ? "JetBrains_Mono" : preset.font === "archivo-black" ? "Archivo_Black" : preset.font === "space-grotesk" ? "Space_Grotesk" : preset.font === "inter-tight" ? "Inter_Tight" : preset.font === "manrope" ? "Manrope" : "Sora"}]` : "font-display")}
+                  className={cn("text-6xl font-bold tabular-nums", running && "drop-shadow-[0_0_20px_hsl(var(--primary)/0.6)]", preset ? personaFontClass(preset) : "font-display")}
                   style={preset && running ? { textShadow: `0 0 24px hsl(${preset.accent} / 0.55)` } : undefined}
                 >{mm}:{ss}</div>
                 <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">{running ? "En foco" : "Listo para empezar"}</div>
