@@ -68,15 +68,14 @@ export const IdentityAvatar = ({
         className={cn(
           "flex items-center justify-center font-bold text-primary-foreground shadow-lg",
           sizes[size],
-          preset
-            ? cn(radiusFor(preset.cardStyle), personaFontClass(preset))
-            : cn("rounded-2xl bg-gradient-to-br font-display", tone!.from, tone!.to),
+          preset ? radiusFor(preset.cardStyle) : cn("rounded-2xl bg-gradient-to-br font-display", tone!.from, tone!.to),
         )}
         style={
           preset
             ? {
                 background: `linear-gradient(135deg, hsl(${preset.gradientFrom}), hsl(${preset.gradientTo}))`,
                 boxShadow: `0 10px 24px -10px hsl(${preset.accent} / 0.6)`,
+                ...personaFontStyle(preset),
               }
             : undefined
         }
