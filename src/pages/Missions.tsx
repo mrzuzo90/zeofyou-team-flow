@@ -26,18 +26,27 @@ const PRIORITY_COLOR: Record<string, string> = {
 };
 
 export default function Missions() {
-  const { data: missions = [] } = useMissions();
+  const { data: allMissions = [] } = useMissions();
   const { data: identities = [] } = useIdentities();
+  const { mode } = useCurrentMode();
   const create = useCreateMission();
   const update = useUpdateMission();
   const del = useDeleteMission();
   const addXp = useAddXp();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50 });
+  const [showAll, setShowAll] = useState(false);
+  const [form, setForm] = useState({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" as "" | ModeKey });
+
+  // Filtro por modo: si hay modo activo (≠ none) y no se fuerza ver todo, ocultar las que tengan contexto distinto.
+  const filterByMode = mode !== "none" && !showAll;
+  const missions = filterByMode
+    ? allMissions.filter((m) => !m.context || m.context === mode)
+    : allMissions;
 
   const primary = missions.find((m) => m.is_primary && m.status !== "completed" && m.status !== "archived");
   const others = missions.filter((m) => m.id !== primary?.id);
   const locked = !!primary; // bloquea cambios en secundarias mientras hay principal activa
+  const hiddenCount = allMissions.length - missions.length;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
