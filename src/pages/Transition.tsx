@@ -53,12 +53,12 @@ export default function Transition() {
         bringing: bringing || null,
       } as any);
     }
-    setMode(to);
+    await setMode(to, { skipRitual: true });
     nav("/");
   };
 
-  const skipAll = () => {
-    setMode(to);
+  const skipAll = async () => {
+    await setMode(to, { skipRitual: true });
     nav("/");
   };
 
