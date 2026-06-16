@@ -45,6 +45,17 @@ export const useUpdateIdentityStatus = () => {
   });
 };
 
+export const useUpdateIdentity = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Identity> }) => {
+      const { error } = await supabase.from("identities").update(patch as any).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["identities"] }),
+  });
+};
+
 export const useCreateIdentity = () => {
   const { user } = useAuth();
   const qc = useQueryClient();
