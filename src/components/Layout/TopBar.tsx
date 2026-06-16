@@ -3,6 +3,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { Flame, Sparkles } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { XPBar } from "@/components/UI/XPBar";
+import { ModeSwitcher } from "@/components/Mode/ModeSwitcher";
 
 export const TopBar = ({ title, subtitle }: { title: string; subtitle?: string }) => {
   const { data: profile } = useProfile();
