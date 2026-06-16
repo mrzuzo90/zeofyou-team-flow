@@ -15,6 +15,13 @@ export type Mission = {
   due_date: string | null;
   xp_reward: number;
   context: "work" | "home" | "family" | "travel" | null;
+  kind: "task" | "long_term";
+  horizon: "week" | "month" | "quarter" | "year" | null;
+  target_minutes: number | null;
+  progress: number;
+  progress_mode: "manual" | "time";
+  minutes_spent: number;
+  started_at: string | null;
 };
 
 export const useMissions = () => {
