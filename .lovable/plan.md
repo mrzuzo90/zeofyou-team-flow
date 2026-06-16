@@ -1,56 +1,29 @@
-# Premium pass — Misiones, Focus, Identidades, Insights, Perfil + Sidebar
+# Fix: modo claro realmente claro
 
-Continuación del plan de diseño "Award-grade". Aplico los primitives de motion ya construidos (`KineticHeading`, `AnimatedNumber`, `MagneticButton`, `TiltCard`) a las cinco pantallas restantes, refino el `AppSidebar` con indicador animado y hago QA visual de las transiciones de página. No toco lógica de datos ni de negocio.
+El `AuroraCanvas` (WebGL) ocupa toda la pantalla como fondo y tiene **el color base hardcoded en el shader**:
 
-## 1. Misiones (`src/pages/Missions.tsx`)
-- Cabeceras de sección (Primaria, Secundarias, Trabajadas hoy…) con `KineticHeading splitBy="word"` y entrada en stagger.
-- KPIs de la cabecera (XP del día, racha, completadas) con `AnimatedNumber`.
-- Tarjeta de misión envuelta en `TiltCard` (max 6° en desktop, desactivado en touch/reduced-motion).
-- Botones de acción primarios (Completar, Empezar) con `MagneticButton` + glow sutil al hover.
-- Barra de progreso de misión: añadir capa shimmer aurora encima de la barra existente.
+```glsl
+vec3 bg = vec3(0.06, 0.065, 0.10);  // casi negro
+col = mix(bg, col, 0.55);
+```
 
-## 2. Focus (`src/pages/Focus.tsx`)
-- `KineticHeading` para el título (nombre de identidad) con `splitBy="char"`.
-- Contador del Pomodoro como `AnimatedNumber` (segundos y minutos, fade entre cambios).
-- Botones Start/Pause/Stop como `MagneticButton`; el botón principal con "breathing glow" (animación lenta sobre `box-shadow` aurora) durante la sesión activa.
-- Tarjeta del objetivo de sesión con `TiltCard` ligero.
+Eso pinta un fondo casi negro sobre todo el `body`, así que aunque los tokens del tema claro estén bien, el lienzo aurora los tapa. Por eso el "modo claro" sigue viéndose oscuro.
 
-## 3. Identidades (`src/pages/Identities.tsx`)
-- Título de página con `KineticHeading`.
-- Cada tarjeta de identidad envuelta en `TiltCard` y con `MagneticButton` para la acción primaria.
-- Métricas por identidad (energía, misiones, XP) con `AnimatedNumber`.
-- Reveal con stagger al montar la grilla.
+## Cambios
 
-## 4. Insights (`src/pages/Insights.tsx`)
-- Título con `KineticHeading`.
-- Big numbers del resumen (XP semanal, % de cumplimiento, racha) con `AnimatedNumber` y eyebrow mono.
-- Pequeños sparklines/heatmap: aplicar `TiltCard` al contenedor principal de la tarjeta (sin tocar la lógica del gráfico).
-- Filtros (chips de semana/mes) como `MagneticButton`.
+1. **`src/components/Motion/AuroraCanvas.tsx`**
+   - Añadir un uniform `uBg` (vec3) y un uniform `uMix` (float) al shader, en lugar del color fijo.
+   - Leer el tema actual con `document.documentElement.dataset.theme` y un `MutationObserver` sobre `<html>` para actualizar uniforms al cambiar tema/modo sin recrear el contexto WebGL.
+   - Tema oscuro: `bg = (0.06, 0.065, 0.10)`, `mix = 0.55`, opacidad canvas `0.9` (como ahora).
+   - Tema claro: `bg = (0.97, 0.97, 0.99)`, `mix = 0.18` (aurora muy diluida), opacidad canvas `0.55` y `mix-blend-mode: multiply` para que tiña suave sin oscurecer.
+   - En `prefers-reduced-motion` (fallback CSS `.aurora-bg`): asegurar que también respeta tema claro (los overrides ya añadidos en `index.css` lo cubren, no toco nada).
 
-## 5. Perfil (`src/pages/Profile.tsx`)
-- `KineticHeading` en cabecera.
-- XP, nivel, racha y misiones completadas con `AnimatedNumber`.
-- "Guardar", "Cerrar sesión" como `MagneticButton`.
-- La tarjeta de identidad del usuario envuelta en `TiltCard`.
-
-## 6. Sidebar desktop (`src/components/Layout/AppSidebar.tsx`)
-- Indicador activo animado tipo "liquid": una franja `layoutId="sidebar-active"` (Framer Motion) que se desliza entre items con `spring`.
-- Halo aurora sutil detrás del item activo, sincronizado con el modo de contexto (usa los tokens existentes `--primary` / `--gradient-aurora`).
-- Hover con sombra elevada y pequeño desplazamiento; iconos con micro-bounce.
-- Colapsado (icon-only) mantiene el indicador como punto luminoso lateral.
-
-## 7. QA visual de transiciones de página
-- Verificar que `PageTransition` no produce flash blanco al cambiar de ruta en tema claro y oscuro.
-- Asegurar que el "curtain" respeta el gradiente del modo actual (work/home/family/travel) y no se queda visible si la ruta cambia rápido.
-- Revisar que `KineticHeading` no re-anima en cada `setState` (key estable por ruta+título).
-- Capturas en desktop 1440 y móvil 390 para Dashboard, Misiones, Focus, Identidades, Insights, Perfil — claro y oscuro.
-
-## Accesibilidad y rendimiento
-- Todos los efectos pesados envueltos en `useReducedMotion()` y desactivados en touch (`window.matchMedia('(hover: none)')`).
-- `TiltCard` solo activo con puntero fino; degrada a card normal en táctil.
-- No se introduce ninguna dependencia nueva.
+2. **`src/index.css`**
+   - Subir luminosidad del `--gradient-hero` claro y añadir un `--shadow-glass` con menos opacidad para que el glassmorphism sobre fondo claro no se vea sucio.
+   - Asegurar `body { background-color: hsl(var(--background)); }` explícito (ya está vía `bg-background`, pero confirmo).
+   - Pequeño retoque a `.glass-card` en claro: borde y sombras más sutiles para que las tarjetas no parezcan "agujeros" sobre fondo blanco.
 
 ## Fuera de alcance
-- Lógica de negocio, datos, RLS, edge functions.
-- Nuevos colores o tipografías (se usan los tokens y fuentes ya definidos).
-- Onboarding, Login, Signup, Planning, HandsFree, Transition.
+- No cambio la paleta aurora ni los tokens del tema oscuro.
+- No toco lógica de aplicación de tema (`useTheme`), que ya funciona.
+- No cambio el `IntroLoader` ni otros lienzos puntuales.

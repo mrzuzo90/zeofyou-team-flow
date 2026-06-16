@@ -17,6 +17,8 @@ const FRAG = /* glsl */ `
   uniform vec3 uA;
   uniform vec3 uB;
   uniform vec3 uC;
+  uniform vec3 uBg;
+  uniform float uMix;
 
   // 2D simplex noise — Ashima
   vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -64,14 +66,13 @@ const FRAG = /* glsl */ `
     vec3 col = uA * wA + uB * wB + uC * wC;
     col += uA * mouseGlow;
 
-    // Vignette + base oscuro
+    // Vignette suave (más ligera en claro)
     vec2 q = uv - 0.5;
     float vig = 1.0 - dot(q, q) * 1.4;
-    col *= vig;
+    col *= mix(1.0, vig, step(0.5, 1.0 - uBg.r));
 
-    // Mezcla con fondo profundo
-    vec3 bg = vec3(0.06, 0.065, 0.10);
-    col = mix(bg, col, 0.55);
+    // Mezcla con fondo del tema activo
+    col = mix(uBg, col, uMix);
 
     gl_FragColor = vec4(col, 1.0);
   }
@@ -118,11 +119,31 @@ export function AuroraCanvas() {
     const uA = gl.getUniformLocation(program, "uA");
     const uB = gl.getUniformLocation(program, "uB");
     const uC = gl.getUniformLocation(program, "uC");
+    const uBg = gl.getUniformLocation(program, "uBg");
+    const uMix = gl.getUniformLocation(program, "uMix");
 
     // Paleta aurora — violeta / verde / azul
     gl.uniform3f(uA, 0.658, 0.545, 0.980); // #a78bfa
     gl.uniform3f(uB, 0.290, 0.870, 0.502); // #4ade80
     gl.uniform3f(uC, 0.231, 0.510, 0.965); // #3b82f6
+
+    const applyTheme = () => {
+      const light = document.documentElement.dataset.theme === "light";
+      if (light) {
+        gl.uniform3f(uBg, 0.97, 0.975, 0.99);
+        gl.uniform1f(uMix, 0.18);
+        canvas.style.opacity = "0.55";
+        canvas.style.mixBlendMode = "multiply";
+      } else {
+        gl.uniform3f(uBg, 0.06, 0.065, 0.10);
+        gl.uniform1f(uMix, 0.55);
+        canvas.style.opacity = "0.9";
+        canvas.style.mixBlendMode = "normal";
+      }
+    };
+    applyTheme();
+    const themeObs = new MutationObserver(applyTheme);
+    themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme", "data-mode"] });
 
     let mx = 0.5, my = 0.5;
     let tmx = 0.5, tmy = 0.5;
@@ -167,6 +188,7 @@ export function AuroraCanvas() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("mousemove", onMove);
       document.removeEventListener("visibilitychange", onVis);
+      themeObs.disconnect();
       gl.deleteProgram(program);
       gl.deleteBuffer(buf);
     };
@@ -180,7 +202,7 @@ export function AuroraCanvas() {
     <canvas
       ref={canvasRef}
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-90"
+      className="pointer-events-none fixed inset-0 z-0 h-full w-full"
     />
   );
 }
