@@ -6,6 +6,7 @@ import { ModeSwitcher } from "@/components/Mode/ModeSwitcher";
 import { KineticHeading } from "@/components/Motion/KineticHeading";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
 import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
+import { ThemeToggle } from "@/components/UI/ThemeToggle";
 
 type Props = {
   title: string;
@@ -69,6 +70,7 @@ export const TopBar = ({ title, subtitle, onOpenPalette, onOpenCoach }: Props) =
         {profile && (
           <div className="flex items-center gap-2">
             <ModeSwitcher />
+            <ThemeToggle />
             <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-warning/10 px-3 py-1.5 text-warning">
               <Flame className="h-3.5 w-3.5" />
               <span className="text-xs font-semibold">
