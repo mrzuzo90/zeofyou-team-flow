@@ -14,6 +14,7 @@ export type Identity = {
   energy: number;
   status: "active" | "resting" | "paused";
   total_xp: number;
+  context: "work" | "home" | "family" | "travel" | null;
 };
 
 export const useIdentities = () => {
