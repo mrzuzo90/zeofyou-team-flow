@@ -561,4 +561,136 @@
   html[data-theme="light"] .halo-aurora::before {
     background: linear-gradient(135deg, hsl(252 72% 54% / 0.45), hsl(142 62% 40% / 0.3) 60%, transparent 90%);
   }
+
+  /* ────────────────────────────────────────────────────────────────
+     Persona surfaces — personalidad visual por identidad.
+     Cada tarjeta consume vars del contenedor:
+       --persona-accent, --persona-accent-soft, --persona-from, --persona-to
+     Las clases solo definen textura/borde/sombra, NO color base.
+     ──────────────────────────────────────────────────────────────── */
+  .persona-card {
+    position: relative;
+    isolation: isolate;
+    transition: box-shadow 0.35s ease, border-color 0.35s ease, transform 0.35s ease;
+  }
+  .persona-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.9;
+  }
+  .persona-card > * { position: relative; z-index: 1; }
+
+  /* Minimal — Estratega */
+  .persona-card--minimal {
+    border: 1px solid hsl(var(--persona-accent) / 0.28);
+    box-shadow: 0 12px 40px -16px hsl(var(--persona-accent) / 0.35);
+  }
+  .persona-card--minimal::before {
+    background:
+      linear-gradient(180deg, hsl(var(--persona-accent) / 0.06), transparent 40%),
+      repeating-linear-gradient(0deg, hsl(var(--persona-accent) / 0.05) 0 1px, transparent 1px 24px),
+      repeating-linear-gradient(90deg, hsl(var(--persona-accent) / 0.05) 0 1px, transparent 1px 24px);
+  }
+
+  /* Editorial — Creativo */
+  .persona-card--editorial {
+    border: 1px solid hsl(var(--persona-accent-soft) / 0.35);
+    box-shadow: 0 24px 50px -22px hsl(var(--persona-accent) / 0.5);
+  }
+  .persona-card--editorial::before {
+    background:
+      radial-gradient(80% 60% at 80% 0%, hsl(var(--persona-accent) / 0.28), transparent 60%),
+      radial-gradient(60% 80% at 0% 100%, hsl(var(--persona-accent-soft) / 0.22), transparent 60%);
+  }
+
+  /* Mono — Analítico */
+  .persona-card--mono {
+    border: 1px solid hsl(var(--persona-accent) / 0.5);
+    border-radius: 0.5rem !important;
+    box-shadow: 0 0 0 1px hsl(var(--persona-accent) / 0.1), 0 14px 30px -18px hsl(var(--persona-accent) / 0.5);
+  }
+  .persona-card--mono::before {
+    background:
+      repeating-linear-gradient(90deg, hsl(var(--persona-accent) / 0.08) 0 1px, transparent 1px 8px);
+    opacity: 0.6;
+  }
+
+  /* Organic — Cuidador */
+  .persona-card--organic {
+    border: 1px solid hsl(var(--persona-accent) / 0.22);
+    border-radius: 2.25rem !important;
+    box-shadow: 0 30px 60px -24px hsl(var(--persona-accent) / 0.45);
+  }
+  .persona-card--organic::before {
+    background:
+      radial-gradient(120% 80% at 50% 120%, hsl(var(--persona-accent) / 0.22), transparent 60%),
+      radial-gradient(60% 50% at 20% 0%, hsl(var(--persona-accent-soft) / 0.18), transparent 70%);
+  }
+
+  /* Topo — Explorador */
+  .persona-card--topo {
+    border: 1px solid hsl(var(--persona-accent) / 0.3);
+    box-shadow: 0 18px 40px -18px hsl(var(--persona-accent) / 0.45);
+  }
+  .persona-card--topo::before {
+    background:
+      radial-gradient(circle at 30% 40%, hsl(var(--persona-accent) / 0.18) 0 1px, transparent 2px),
+      radial-gradient(circle at 70% 70%, hsl(var(--persona-accent-soft) / 0.16) 0 1px, transparent 2px),
+      repeating-radial-gradient(circle at 50% 50%, hsl(var(--persona-accent) / 0.08) 0 1px, transparent 1px 14px);
+  }
+
+  /* Duotone — Negociador */
+  .persona-card--duotone {
+    border: 1px solid hsl(var(--persona-accent) / 0.35);
+    box-shadow: 0 22px 50px -20px hsl(var(--persona-accent) / 0.55);
+  }
+  .persona-card--duotone::before {
+    background: linear-gradient(135deg, hsl(var(--persona-from) / 0.22), hsl(var(--persona-to) / 0.22));
+  }
+
+  /* Brutalist — Guerrero */
+  .persona-card--brutalist {
+    border: 2px solid hsl(var(--persona-accent));
+    border-radius: 0.25rem !important;
+    box-shadow: 6px 6px 0 0 hsl(var(--persona-accent) / 0.85);
+  }
+  .persona-card--brutalist::before {
+    background:
+      linear-gradient(180deg, hsl(var(--persona-accent) / 0.1), transparent 30%);
+  }
+
+  /* Aurora — Soñador */
+  .persona-card--aurora {
+    border: 1px solid hsl(var(--persona-accent-soft) / 0.35);
+    box-shadow: 0 30px 80px -28px hsl(var(--persona-accent) / 0.6);
+  }
+  .persona-card--aurora::before {
+    background:
+      radial-gradient(60% 50% at 20% 20%, hsl(var(--persona-from) / 0.28), transparent 60%),
+      radial-gradient(50% 60% at 80% 80%, hsl(var(--persona-to) / 0.28), transparent 60%);
+    filter: blur(0.5px);
+  }
+
+  /* Hover sutil (compartido) */
+  .persona-card:hover {
+    border-color: hsl(var(--persona-accent) / 0.55);
+  }
+
+  /* Chip de identidad reutilizable */
+  .persona-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    background: hsl(var(--persona-accent) / 0.14);
+    color: hsl(var(--persona-accent));
+    border: 1px solid hsl(var(--persona-accent) / 0.3);
+  }
 }
+
