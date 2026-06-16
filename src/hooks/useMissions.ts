@@ -99,3 +99,24 @@ export const useDeleteMission = () => {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["missions"] }),
   });
 };
+
+export const useLogMissionTime = () => {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ missionId, minutes, identityId }: { missionId: string; minutes: number; identityId?: string | null }) => {
+      const { error } = await supabase.from("focus_sessions").insert({
+        user_id: user!.id,
+        mission_id: missionId,
+        identity_id: identityId ?? null,
+        duration_minutes: minutes,
+        pomodoros_completed: 0,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["missions"] });
+      qc.invalidateQueries({ queryKey: ["focus-sessions"] });
+    },
+  });
+};
