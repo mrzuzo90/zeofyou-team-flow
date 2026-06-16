@@ -15,6 +15,8 @@ export type Identity = {
   status: "active" | "resting" | "paused";
   total_xp: number;
   context: "work" | "home" | "family" | "travel" | null;
+  persona: string | null;
+  preferences: Record<string, any> | null;
 };
 
 export const useIdentities = () => {
@@ -70,6 +72,8 @@ export const useCreateIdentity = () => {
         color: input.color ?? "emerald",
         status: input.status ?? "resting",
         energy: input.energy ?? 80,
+        persona: (input.persona as any) ?? null,
+        preferences: (input.preferences as any) ?? {},
       } as any);
       if (error) throw error;
     },

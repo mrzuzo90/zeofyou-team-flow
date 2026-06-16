@@ -28,6 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { TiltCard } from "@/components/Motion/TiltCard";
 import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
+import { resolvePersona, personaCSSVars, personaFontClass } from "@/lib/personas";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
@@ -161,24 +162,43 @@ export default function Missions() {
 
   const renderCard = (m: Mission, opts?: { secondary?: boolean }) => {
     const ident = identities.find((i) => i.id === m.assigned_identity_id);
+    const preset = ident ? resolvePersona(ident) : null;
     const isLocked = opts?.secondary && locked && m.status !== "in_progress";
     return (
-      <GlassCard key={m.id} className={cn("p-5 relative", isLocked && "opacity-50")}>
+      <GlassCard
+        key={m.id}
+        className={cn("p-5 relative overflow-hidden", isLocked && "opacity-50")}
+        style={preset ? personaCSSVars(preset) : undefined}
+      >
+        {preset && (
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-0 w-1"
+            style={{
+              background: `linear-gradient(180deg, hsl(${preset.gradientFrom}), hsl(${preset.gradientTo}))`,
+            }}
+          />
+        )}
         {isLocked && (
           <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-warning/15 px-2 py-1 text-[10px] font-semibold text-warning">
             <Lock className="h-3 w-3" /> Bloqueada
           </div>
         )}
         <div className="flex items-start gap-3">
-          {ident && <IdentityAvatar name={ident.name} color={ident.color} size="sm" />}
+          {ident && <IdentityAvatar identity={ident} name={ident.name} size="sm" />}
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", PRIORITY_COLOR[m.priority])}>{priorityLabel[m.priority]}</span>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{missionStatusLabel[m.status]}</span>
               <span className="text-[10px] text-primary">+<AnimatedNumber value={m.xp_reward} /> XP</span>
               <ContextBadge value={m.context} size="xs" onChange={(c) => update.mutate({ id: m.id, patch: { context: c as any } })} />
+              {preset && ident && (
+                <span className={cn("text-[10px]", personaFontClass(preset))} style={{ color: `hsl(${preset.accent})` }}>
+                  · {ident.name}
+                </span>
+              )}
             </div>
-            <h3 className="font-display font-semibold leading-tight">{m.title}</h3>
+            <h3 className={cn("font-semibold leading-tight", preset ? personaFontClass(preset) : "font-display")}>{m.title}</h3>
             {m.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
             {m.kind === "long_term" && (
               <div className="mt-3">

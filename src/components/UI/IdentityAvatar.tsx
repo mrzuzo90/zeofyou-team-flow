@@ -1,5 +1,12 @@
 import { cn } from "@/lib/utils";
 import { getColor } from "@/lib/zeofyou";
+import {
+  personaCSSVars,
+  personaFontClass,
+  resolvePersona,
+  type IdentityLike,
+  type PersonaPreset,
+} from "@/lib/personas";
 
 const INITIALS = (name: string) =>
   name
@@ -10,30 +17,69 @@ const INITIALS = (name: string) =>
     .join("")
     .toUpperCase();
 
-export const IdentityAvatar = ({
-  name,
-  color,
-  size = "md",
-  status,
-  className,
-}: {
+interface Props {
   name: string;
   color?: string | null;
+  identity?: IdentityLike | null;
+  persona?: PersonaPreset;
   size?: "sm" | "md" | "lg" | "xl";
   status?: "active" | "resting" | "paused";
   className?: string;
-}) => {
-  const tone = getColor(color ?? undefined);
-  const sizes = { sm: "h-9 w-9 text-xs", md: "h-12 w-12 text-sm", lg: "h-16 w-16 text-base", xl: "h-24 w-24 text-xl" };
+}
+
+const sizes = {
+  sm: "h-9 w-9 text-xs",
+  md: "h-12 w-12 text-sm",
+  lg: "h-16 w-16 text-base",
+  xl: "h-24 w-24 text-xl",
+};
+
+// Radio según cardStyle
+const radiusFor = (style: string) => {
+  switch (style) {
+    case "mono":
+    case "brutalist":
+      return "rounded-md";
+    case "organic":
+    case "aurora":
+      return "rounded-[40%]";
+    default:
+      return "rounded-2xl";
+  }
+};
+
+export const IdentityAvatar = ({
+  name,
+  color,
+  identity,
+  persona,
+  size = "md",
+  status,
+  className,
+}: Props) => {
+  // Si hay persona/identity → usar preset; si no, fallback al colorMap legacy.
+  const usePersona = !!(persona || identity);
+  const preset = usePersona ? (persona ?? resolvePersona(identity ?? null)) : null;
+  const tone = !usePersona ? getColor(color ?? undefined) : null;
+
   return (
-    <div className={cn("relative", className)}>
+    <div className={cn("relative", className)} style={preset ? personaCSSVars(preset) : undefined}>
       <div
         className={cn(
-          "flex items-center justify-center rounded-2xl bg-gradient-to-br font-display font-bold text-primary-foreground shadow-lg",
-          tone.from,
-          tone.to,
+          "flex items-center justify-center font-bold text-primary-foreground shadow-lg",
           sizes[size],
+          preset
+            ? cn(radiusFor(preset.cardStyle), personaFontClass(preset))
+            : cn("rounded-2xl bg-gradient-to-br font-display", tone!.from, tone!.to),
         )}
+        style={
+          preset
+            ? {
+                background: `linear-gradient(135deg, hsl(${preset.gradientFrom}), hsl(${preset.gradientTo}))`,
+                boxShadow: `0 10px 24px -10px hsl(${preset.accent} / 0.6)`,
+              }
+            : undefined
+        }
       >
         {INITIALS(name)}
       </div>

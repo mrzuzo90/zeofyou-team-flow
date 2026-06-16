@@ -14,6 +14,7 @@ import { Play, Pause, RotateCcw, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
 import { cn } from "@/lib/utils";
+import { resolvePersona, personaFontClass } from "@/lib/personas";
 
 export default function Focus() {
   const { data: identities = [] } = useIdentities();
@@ -73,6 +74,7 @@ export default function Focus() {
   const progress = ((totalSecs - secondsLeft) / totalSecs) * 100;
 
   const activeIdentity = useMemo(() => identities.find((i) => i.id === identityId), [identities, identityId]);
+  const preset = activeIdentity ? resolvePersona(activeIdentity) : null;
 
   return (
     <Layout title="Focus" subtitle="Una identidad, una misión, un bloque de tiempo" seo={{ title: "Focus · sesión profunda | Zeofyou", description: "Entra en focus con una identidad y una misión: pomodoros, modo privacidad y registro automático.", path: "/enfoque" }}>
@@ -116,16 +118,19 @@ export default function Focus() {
                 />
                 <defs>
                   <linearGradient id="focusGrad">
-                    <stop offset="0%" stopColor="hsl(var(--primary))" />
-                    <stop offset="100%" stopColor="hsl(var(--accent))" />
+                    <stop offset="0%" stopColor={preset ? `hsl(${preset.gradientFrom})` : "hsl(var(--primary))"} />
+                    <stop offset="100%" stopColor={preset ? `hsl(${preset.gradientTo})` : "hsl(var(--accent))"} />
                   </linearGradient>
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 {activeIdentity && (
-                  <div className="mb-3"><IdentityAvatar name={activeIdentity.name} color={activeIdentity.color} status={activeIdentity.status} /></div>
+                  <div className="mb-3"><IdentityAvatar identity={activeIdentity} name={activeIdentity.name} status={activeIdentity.status} /></div>
                 )}
-                <div className={cn("font-display text-6xl font-bold tabular-nums", running && "drop-shadow-[0_0_20px_hsl(var(--primary)/0.6)]")}>{mm}:{ss}</div>
+                <div
+                  className={cn("text-6xl font-bold tabular-nums", running && "drop-shadow-[0_0_20px_hsl(var(--primary)/0.6)]", preset ? personaFontClass(preset) : "font-display")}
+                  style={preset && running ? { textShadow: `0 0 24px hsl(${preset.accent} / 0.55)` } : undefined}
+                >{mm}:{ss}</div>
                 <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">{running ? "En foco" : "Listo para empezar"}</div>
               </div>
             </div>
