@@ -1,38 +1,55 @@
-## Diagnóstico del bug de Google
+## Onboarding híbrido: formulario + sugerencias IA
 
-Los logs de auth muestran que el login con Google **sí completa con status 200** y la sesión se establece. El problema está en el frontend: tras `lovable.auth.signInWithOAuth("google", ...)` en `Login.tsx`, cuando el flujo termina en modo popup (no redirected), el handler no hace `navigate("/")`, así que el usuario se queda atascado en `/login` aunque ya esté autenticado. Además, si un usuario ya logueado abre `/login` o `/signup`, tampoco se le redirige.
+Transformar `/bienvenida` de informativo a productivo: capturar contexto real del usuario y, al terminar, dejar la app poblada con identidades y misión inicial personalizadas.
 
-## Plan
+### Flujo (5 pasos)
 
-### 1. Arreglar el login con Google
-- En `Login.tsx` y `Signup.tsx`: tras `signInWithOAuth`, si no hay `error` y no hay `redirected`, llamar `navigate("/", { replace: true })`. Mantener `setLoading(false)` siempre.
-- En `AuthProvider`: cuando `onAuthStateChange` dispare `SIGNED_IN` y la ruta actual sea `/login` o `/signup`, no hacer nada en el provider (lo gestiona la página), pero exponer un efecto en `Login`/`Signup` que, si `user` ya existe, redirija a `/`.
-- Añadir manejo de error visible (toast) si `result.error` viene del gateway.
+1. **Saludo + nombre y rol** (input text + select/input ocupación).
+2. **Vida y entorno**: campo libre — familia, situación personal, contexto (textarea, opcional pero animado).
+3. **Ambiciones**: 1-3 ambiciones de medio/largo plazo (chips dinámicos, mínimo 1).
+4. **Proyectos y preocupaciones actuales**: dos textareas cortos (proyectos en curso / preocupaciones o bloqueos).
+5. **Resumen IA**: llamada a edge function `onboarding-suggest` que devuelve:
+   - 4 identidades personalizadas (nombre, rol, especialidad, color, energía inicial, descripción)
+   - 1 misión principal sugerida derivada de las ambiciones/proyectos
+   - 2-3 misiones secundarias
+   El usuario las ve en tarjetas, puede editar nombre o eliminar antes de confirmar.
 
-### 2. Crear usuario de prueba
-- Migration que inserte (vía `auth.admin` no es posible desde SQL) → en su lugar: crear un seed usando `supabase--insert` directo a `auth.users` no es seguro. **Alternativa**: documentar credenciales y crear cuenta vía signup programático en una pequeña edge function `seed-demo-user` invocable una sola vez, o simplemente registrar las credenciales:
-  - Email: `demo@zeofyou.app`
-  - Password: `Demo1234!`
-  - Se creará llamando a `supabase.auth.signUp` desde un script de un solo uso (botón oculto en `/login` "Entrar como demo" que hace signUp+signIn la primera vez, después solo signIn). Esto evita tocar `auth` schema.
+### Persistencia
 
-### 3. Mejoras adicionales (UX/funcionalidad)
-- **Redirect-if-authed** en `Login`/`Signup` (evita loops).
-- **Loader global** mientras `AuthProvider` carga (ya existe en ProtectedRoute, replicar para rutas públicas para evitar flash de /login).
-- **Onboarding automático**: si el perfil del usuario no tiene `onboarding_completed=true`, redirigir a `/bienvenida` después del login. (Requiere campo nuevo en `profiles`.)
-- **Migración**: añadir columna `onboarding_completed boolean default false` a `profiles`.
-- **Botón "Entrar como demo"** en pantalla de login para acceso rápido al usuario de prueba.
-- **Toast informativo** en errores OAuth con mensaje real.
+- **Nueva tabla `onboarding_profiles`** (1-1 con `profiles`): `user_id`, `role`, `life_context`, `ambitions text[]`, `current_projects`, `concerns`, `raw_answers jsonb`. RLS por `auth.uid()`.
+- Al confirmar paso 5:
+  - Insert en `onboarding_profiles`.
+  - **Reemplazar** las 4 identidades semilla del trigger por las sugeridas (delete + insert).
+  - Insert de la misión primaria (`is_primary=true`) y las secundarias.
+  - `profiles.onboarding_completed = true` y `display_name` actualizado.
 
-### Archivos a tocar
-- `src/pages/Login.tsx`, `src/pages/Signup.tsx`: navegación post-OAuth + redirect-if-authed + botón demo.
-- `src/contexts/AuthContext.tsx`: exponer helper `signInDemo()`.
-- `src/components/Auth/ProtectedRoute.tsx`: leer `profile.onboarding_completed` y redirigir a `/bienvenida` si falta.
-- `src/hooks/useProfile.ts`: incluir `onboarding_completed`.
-- `src/pages/Onboarding.tsx`: al finalizar, marcar `onboarding_completed=true`.
-- **Migración**: `ALTER TABLE profiles ADD COLUMN onboarding_completed boolean NOT NULL DEFAULT false;`
+### Edge function `onboarding-suggest`
 
-### Fuera de alcance (lo confirmas si quieres)
-- Edge functions de IA (`daily-recommendations`, `weekly-insights`) — pendiente del mensaje anterior.
-- Sistema de logros automáticos.
+- Input: `{ name, role, life_context, ambitions[], current_projects, concerns }`.
+- Lovable AI Gateway, `google/gemini-3-flash-preview`, `Output.object` con Zod schema reducido (identidades + misiones). Prompt en español, tono cálido y específico.
+- Devuelve sugerencias; el cliente las muestra editables.
+- Manejo de 429/402 con toast claro y fallback a las 4 identidades por defecto + una misión genérica derivada de la primera ambición.
 
-¿Procedo con este plan?
+### UX
+
+- Barra de progreso de 5 pasos (ya existe parcialmente).
+- Animaciones framer-motion entre pasos.
+- "Saltar resumen IA" → usa fallback determinista.
+- Botón "Atrás" siempre disponible salvo en paso 1.
+- Inputs validados con zod inline (mensajes en español, sin bloqueo agresivo).
+
+### Archivos
+
+- **Migración**: crear `onboarding_profiles` + grants + RLS.
+- `supabase/functions/onboarding-suggest/index.ts` + `supabase/functions/_shared/ai-gateway.ts`.
+- Reescribir `src/pages/Onboarding.tsx` con los 5 pasos y la llamada a la function.
+- Nuevo hook `src/hooks/useOnboarding.ts` que orquesta el guardado final (transacción client-side: delete identidades, insert nuevas, insert misiones, update profile).
+- Pequeños componentes en `src/components/Onboarding/`: `StepHeader`, `AmbitionsInput`, `SuggestionCard`.
+
+### Fuera de alcance
+
+- Chat conversacional puro (descartado a favor del híbrido).
+- Generación de avatares con IA.
+- Edge functions de IA semanal/diaria (siguen pendientes del plan anterior).
+
+¿Procedo?

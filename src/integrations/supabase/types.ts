@@ -237,6 +237,42 @@ export type Database = {
           },
         ]
       }
+      onboarding_profiles: {
+        Row: {
+          ambitions: string[]
+          concerns: string | null
+          created_at: string
+          current_projects: string | null
+          life_context: string | null
+          raw_answers: Json | null
+          role: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ambitions?: string[]
+          concerns?: string | null
+          created_at?: string
+          current_projects?: string | null
+          life_context?: string | null
+          raw_answers?: Json | null
+          role?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ambitions?: string[]
+          concerns?: string | null
+          created_at?: string
+          current_projects?: string | null
+          life_context?: string | null
+          raw_answers?: Json | null
+          role?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
