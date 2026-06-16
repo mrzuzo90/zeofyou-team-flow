@@ -17,6 +17,7 @@ import { priorityLabel, missionStatusLabel } from "@/lib/zeofyou";
 import { toast } from "sonner";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { ContextBadge } from "@/components/Mode/ContextBadge";
+import { MissionProgress } from "@/components/Missions/MissionProgress";
 import { getMode, type ModeKey } from "@/lib/modes";
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -35,7 +36,19 @@ export default function Missions() {
   const addXp = useAddXp();
   const [open, setOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" as "" | ModeKey });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    is_primary: false,
+    priority: "medium",
+    assigned_identity_id: "",
+    xp_reward: 50,
+    context: "" as "" | ModeKey,
+    kind: "task" as "task" | "long_term",
+    horizon: "month" as "week" | "month" | "quarter" | "year",
+    target_hours: "",
+    progress_mode: "manual" as "manual" | "time",
+  });
 
   // Filtro por modo: si hay modo activo (≠ none) y no se fuerza ver todo, ocultar las que tengan contexto distinto.
   const filterByMode = mode !== "none" && !showAll;
@@ -50,6 +63,7 @@ export default function Missions() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const targetMin = form.kind === "long_term" && form.target_hours ? Math.round(Number(form.target_hours) * 60) : null;
     await create.mutateAsync({
       title: form.title,
       description: form.description,
@@ -58,9 +72,13 @@ export default function Missions() {
       assigned_identity_id: form.assigned_identity_id || null,
       xp_reward: Number(form.xp_reward),
       context: (form.context || null) as any,
+      kind: form.kind,
+      horizon: form.kind === "long_term" ? form.horizon : null,
+      target_minutes: targetMin,
+      progress_mode: form.kind === "long_term" ? form.progress_mode : "manual",
     });
     setOpen(false);
-    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" });
+    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "", kind: "task", horizon: "month", target_hours: "", progress_mode: "manual" });
     toast.success("Misión creada");
   };
 
@@ -96,6 +114,11 @@ export default function Missions() {
             </div>
             <h3 className="font-display font-semibold leading-tight">{m.title}</h3>
             {m.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
+            {m.kind === "long_term" && (
+              <div className="mt-3">
+                <MissionProgress mission={m} />
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between gap-2">
@@ -196,6 +219,42 @@ export default function Missions() {
                 <input type="checkbox" checked={form.is_primary} onChange={(e) => setForm({ ...form, is_primary: e.target.checked })} className="h-4 w-4 rounded accent-primary" />
                 Marcar como misión principal
               </label>
+              <label className="flex items-center gap-2 text-sm border-t border-border/50 pt-3">
+                <input type="checkbox" checked={form.kind === "long_term"} onChange={(e) => setForm({ ...form, kind: e.target.checked ? "long_term" : "task" })} className="h-4 w-4 rounded accent-primary" />
+                Misión de largo plazo (con progreso)
+              </label>
+              {form.kind === "long_term" && (
+                <div className="space-y-3 rounded-lg bg-muted/30 p-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label>Horizonte</Label>
+                      <Select value={form.horizon} onValueChange={(v) => setForm({ ...form, horizon: v as any })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="week">Semana</SelectItem>
+                          <SelectItem value="month">Mes</SelectItem>
+                          <SelectItem value="quarter">Trimestre</SelectItem>
+                          <SelectItem value="year">Año</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Horas objetivo (opcional)</Label>
+                      <Input type="number" min={0} step={0.5} placeholder="Ej. 40" value={form.target_hours} onChange={(e) => setForm({ ...form, target_hours: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Modo de progreso</Label>
+                    <Select value={form.progress_mode} onValueChange={(v) => setForm({ ...form, progress_mode: v as any })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">Manual (yo muevo la barra)</SelectItem>
+                        <SelectItem value="time" disabled={!form.target_hours}>Automático por tiempo dedicado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
               <Button type="submit" className="w-full bg-gradient-emerald text-primary-foreground">Crear misión</Button>
             </form>
           </DialogContent>

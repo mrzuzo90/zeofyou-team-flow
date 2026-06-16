@@ -252,10 +252,17 @@ export type Database = {
           created_at: string
           description: string | null
           due_date: string | null
+          horizon: string | null
           id: string
           is_primary: boolean
+          kind: string
+          minutes_spent: number
           priority: Database["public"]["Enums"]["mission_priority"]
+          progress: number
+          progress_mode: string
+          started_at: string | null
           status: Database["public"]["Enums"]["mission_status"]
+          target_minutes: number | null
           title: string
           updated_at: string
           user_id: string
@@ -268,10 +275,17 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          horizon?: string | null
           id?: string
           is_primary?: boolean
+          kind?: string
+          minutes_spent?: number
           priority?: Database["public"]["Enums"]["mission_priority"]
+          progress?: number
+          progress_mode?: string
+          started_at?: string | null
           status?: Database["public"]["Enums"]["mission_status"]
+          target_minutes?: number | null
           title: string
           updated_at?: string
           user_id: string
@@ -284,10 +298,17 @@ export type Database = {
           created_at?: string
           description?: string | null
           due_date?: string | null
+          horizon?: string | null
           id?: string
           is_primary?: boolean
+          kind?: string
+          minutes_spent?: number
           priority?: Database["public"]["Enums"]["mission_priority"]
+          progress?: number
+          progress_mode?: string
+          started_at?: string | null
           status?: Database["public"]["Enums"]["mission_status"]
+          target_minutes?: number | null
           title?: string
           updated_at?: string
           user_id?: string

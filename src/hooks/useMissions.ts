@@ -15,6 +15,13 @@ export type Mission = {
   due_date: string | null;
   xp_reward: number;
   context: "work" | "home" | "family" | "travel" | null;
+  kind: "task" | "long_term";
+  horizon: "week" | "month" | "quarter" | "year" | null;
+  target_minutes: number | null;
+  progress: number;
+  progress_mode: "manual" | "time";
+  minutes_spent: number;
+  started_at: string | null;
 };
 
 export const useMissions = () => {
@@ -54,6 +61,12 @@ export const useCreateMission = () => {
         category: input.category ?? null,
         xp_reward: input.xp_reward ?? 50,
         status: input.status ?? "pending",
+        context: input.context ?? null,
+        kind: input.kind ?? "task",
+        horizon: input.horizon ?? null,
+        target_minutes: input.target_minutes ?? null,
+        progress_mode: input.progress_mode ?? "manual",
+        progress: input.progress ?? 0,
       } as any);
       if (error) throw error;
     },
@@ -84,5 +97,26 @@ export const useDeleteMission = () => {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["missions"] }),
+  });
+};
+
+export const useLogMissionTime = () => {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ missionId, minutes, identityId }: { missionId: string; minutes: number; identityId?: string | null }) => {
+      const { error } = await supabase.from("focus_sessions").insert({
+        user_id: user!.id,
+        mission_id: missionId,
+        identity_id: identityId ?? null,
+        duration_minutes: minutes,
+        pomodoros_completed: 0,
+      } as any);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["missions"] });
+      qc.invalidateQueries({ queryKey: ["focus-sessions"] });
+    },
   });
 };
