@@ -1,150 +1,123 @@
+import { useEffect, useState } from "react";
+import Layout from "@/components/Layout/Layout";
+import { GlassCard } from "@/components/UI/GlassCard";
+import { XPBar } from "@/components/UI/XPBar";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile, useUpdateProfile } from "@/hooks/useProfile";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { LogOut, Trophy, Flame } from "lucide-react";
+import { toast } from "sonner";
+import { xpProgress } from "@/lib/zeofyou";
+import { cn } from "@/lib/utils";
 
-import React from 'react';
-import Header from '../components/Layout/Header';
-import { Button } from '../components/ui/button';
-import { useApp } from '../contexts/AppContext';
-import { User, Mail, Settings, LogOut, Shield, Bell, HelpCircle } from 'lucide-react';
-
-const Profile = () => {
-  const { currentUser, logout } = useApp();
-
-  const profileStats = [
-    { label: 'Días Activo', value: '45', color: 'blue' },
-    { label: 'Sesiones Focus', value: '128', color: 'green' },
-    { label: 'Tareas Completadas', value: '89', color: 'purple' },
-    { label: 'Horas Productivas', value: '156h', color: 'orange' }
-  ];
-
-  const menuItems = [
-    { icon: Settings, label: 'Configuración General', action: () => {} },
-    { icon: Bell, label: 'Notificaciones', action: () => {} },
-    { icon: Shield, label: 'Privacidad y Seguridad', action: () => {} },
-    { icon: HelpCircle, label: 'Ayuda y Soporte', action: () => {} }
-  ];
-
-  return (
-    <div className="min-h-screen bg-gray-900 pb-20">
-      <Header title="Mi Perfil" />
-      
-      <main className="max-w-md mx-auto px-4 py-6 space-y-6">
-        {/* Información del Usuario */}
-        <section className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <div className="text-center">
-            <div className="w-24 h-24 bg-gray-700 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <User className="w-12 h-12 text-gray-400" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-1">
-              {currentUser?.name || 'Usuario Zeofyou'}
-            </h2>
-            <div className="flex items-center justify-center text-gray-400 mb-4">
-              <Mail className="w-4 h-4 mr-2" />
-              <span className="text-sm">{currentUser?.email || 'usuario@zeofyou.com'}</span>
-            </div>
-            <Button variant="outline" size="sm" className="bg-gray-700 text-white hover:bg-gray-600">
-              Editar Perfil
-            </Button>
-          </div>
-        </section>
-
-        {/* Estadísticas */}
-        <section>
-          <h3 className="text-lg font-semibold text-white mb-4">Estadísticas</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {profileStats.map((stat, index) => (
-              <div key={index} className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-                <div className={`text-2xl font-bold ${
-                  stat.color === 'blue' ? 'text-blue-400' :
-                  stat.color === 'green' ? 'text-green-400' :
-                  stat.color === 'purple' ? 'text-purple-400' :
-                  'text-orange-400'
-                }`}>
-                  {stat.value}
-                </div>
-                <div className="text-gray-400 text-sm">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Progreso del Nivel */}
-        <section className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="text-white font-medium">Nivel de Maestría</h3>
-            <span className="text-blue-400 font-bold">Nivel 7</span>
-          </div>
-          <div className="w-full bg-gray-700 rounded-full h-3 mb-2">
-            <div className="bg-blue-500 h-3 rounded-full" style={{ width: '65%' }}></div>
-          </div>
-          <div className="flex justify-between text-sm text-gray-400">
-            <span>1,280 XP</span>
-            <span>2,000 XP</span>
-          </div>
-        </section>
-
-        {/* Logros Recientes */}
-        <section>
-          <h3 className="text-lg font-semibold text-white mb-4">Logros Recientes</h3>
-          <div className="space-y-3">
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 flex items-center">
-              <div className="bg-yellow-500/20 p-2 rounded-lg mr-3">
-                <span className="text-yellow-400 text-xl">🏆</span>
-              </div>
-              <div>
-                <h4 className="text-white font-medium">Maestro del Enfoque</h4>
-                <p className="text-gray-400 text-sm">Completaste 100 sesiones de enfoque</p>
-              </div>
-            </div>
-            
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 flex items-center">
-              <div className="bg-green-500/20 p-2 rounded-lg mr-3">
-                <span className="text-green-400 text-xl">🎯</span>
-              </div>
-              <div>
-                <h4 className="text-white font-medium">Equilibrio Perfecto</h4>
-                <p className="text-gray-400 text-sm">Todas las identidades activas por 7 días</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Menú de Configuración */}
-        <section>
-          <h3 className="text-lg font-semibold text-white mb-4">Configuración</h3>
-          <div className="space-y-2">
-            {menuItems.map((item, index) => (
-              <button
-                key={index}
-                onClick={item.action}
-                className="w-full bg-gray-800 hover:bg-gray-700 rounded-lg p-4 border border-gray-700 flex items-center transition-all duration-200"
-              >
-                <item.icon className="w-5 h-5 text-gray-400 mr-3" />
-                <span className="text-white font-medium">{item.label}</span>
-                <span className="ml-auto text-gray-400">›</span>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        {/* Cerrar Sesión */}
-        <section className="pt-4">
-          <Button
-            variant="destructive"
-            className="w-full"
-            onClick={logout}
-          >
-            <LogOut className="w-5 h-5 mr-2" />
-            Cerrar Sesión
-          </Button>
-        </section>
-
-        {/* Información de la App */}
-        <section className="text-center text-gray-500 text-sm pt-4">
-          <p>Zeofyou v1.0.0</p>
-          <p>© 2024 Zeofyou. Todos los derechos reservados.</p>
-        </section>
-      </main>
-    </div>
-  );
+const RARITY: Record<string, string> = {
+  common: "bg-muted/40 text-muted-foreground border-muted",
+  rare: "bg-sky-500/15 text-sky-300 border-sky-500/40",
+  epic: "bg-violet-500/15 text-violet-300 border-violet-500/40",
+  legendary: "bg-warning/15 text-warning border-warning/40",
 };
 
-export default Profile;
+export default function Profile() {
+  const { signOut, user } = useAuth();
+  const { data: profile } = useProfile();
+  const update = useUpdateProfile();
+  const [name, setName] = useState(profile?.display_name ?? "");
+  const [pomodoro, setPomodoro] = useState(profile?.preferences?.pomodoroMinutes ?? 25);
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [unlocked, setUnlocked] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (profile) {
+      setName(profile.display_name ?? "");
+      setPomodoro(profile.preferences?.pomodoroMinutes ?? 25);
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data: all } = await supabase.from("achievements").select("*");
+      const { data: mine } = await supabase.from("user_achievements").select("achievement_id").eq("user_id", user!.id);
+      setAchievements(all ?? []);
+      setUnlocked((mine ?? []).map((m: any) => m.achievement_id));
+    };
+    if (user) load();
+  }, [user]);
+
+  const save = async () => {
+    await update.mutateAsync({
+      display_name: name,
+      preferences: { ...(profile?.preferences ?? {}), pomodoroMinutes: pomodoro, breakMinutes: profile?.preferences?.breakMinutes ?? 5, theme: profile?.preferences?.theme ?? "dark" },
+    });
+    toast.success("Guardado");
+  };
+
+  const { level, current, needed } = xpProgress(profile?.xp ?? 0);
+
+  return (
+    <Layout title="Perfil" subtitle="Tu nivel, tus logros y tus preferencias">
+      <div className="grid gap-5 lg:grid-cols-3">
+        <GlassCard glow="emerald" className="p-6 lg:col-span-2">
+          <div className="flex items-center gap-5">
+            <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-emerald text-3xl font-display font-bold text-primary-foreground shadow-glow-emerald">
+              {(profile?.display_name ?? "T")[0].toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-display text-2xl font-bold truncate">{profile?.display_name ?? "Usuario"}</div>
+              <div className="text-sm text-muted-foreground truncate">{user?.email}</div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-3 py-1 text-xs font-semibold text-primary">Nivel {level}</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-3 py-1 text-xs font-semibold text-warning"><Flame className="h-3 w-3" /> {profile?.streak_days ?? 0} días</span>
+                <span className="inline-flex items-center gap-1 rounded-full bg-secondary/15 px-3 py-1 text-xs font-semibold text-secondary"><Trophy className="h-3 w-3" /> {unlocked.length}/{achievements.length}</span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6">
+            <XPBar xp={profile?.xp ?? 0} />
+            <div className="mt-1 text-xs text-muted-foreground">{current} / {needed} XP para nivel {level + 1}</div>
+          </div>
+        </GlassCard>
+
+        <GlassCard className="p-6">
+          <h3 className="mb-4 font-display font-bold">Preferencias</h3>
+          <div className="space-y-4">
+            <div className="space-y-1.5"><Label>Nombre</Label><Input value={name} onChange={(e) => setName(e.target.value)} /></div>
+            <div className="space-y-2">
+              <Label>Duración Pomodoro: {pomodoro} min</Label>
+              <Slider value={[pomodoro]} onValueChange={(v) => setPomodoro(v[0])} min={10} max={90} step={5} />
+            </div>
+            <Button onClick={save} className="w-full bg-gradient-emerald text-primary-foreground">Guardar</Button>
+            <Button variant="outline" onClick={signOut} className="w-full gap-2"><LogOut className="h-4 w-4" /> Cerrar sesión</Button>
+          </div>
+        </GlassCard>
+      </div>
+
+      <section className="mt-8">
+        <h2 className="mb-4 font-display text-lg font-bold">Logros</h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {achievements.map((a) => {
+            const has = unlocked.includes(a.id);
+            return (
+              <GlassCard key={a.id} className={cn("p-4 border", !has && "opacity-50", has && RARITY[a.rarity] ?? RARITY.common)}>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card text-xl">{has ? "🏆" : "🔒"}</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <div className="font-display font-semibold leading-tight">{a.name}</div>
+                      <span className="text-[10px] uppercase tracking-wider opacity-70">{a.rarity}</span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground">{a.description}</p>
+                    <div className="mt-1 text-[10px] text-primary">+{a.xp_reward} XP</div>
+                  </div>
+                </div>
+              </GlassCard>
+            );
+          })}
+        </div>
+      </section>
+    </Layout>
+  );
+}
