@@ -17,7 +17,8 @@ export const TopBar = ({ title, subtitle }: { title: string; subtitle?: string }
           {subtitle && <p className="text-xs text-muted-foreground truncate">{subtitle}</p>}
         </div>
         {profile && (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
+            <ModeSwitcher />
             <div className="hidden md:flex items-center gap-1.5 rounded-full bg-warning/10 px-3 py-1 text-warning">
               <Flame className="h-3.5 w-3.5" />
               <span className="text-xs font-semibold">{profile.streak_days} días</span>
