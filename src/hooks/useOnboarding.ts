@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMutation } from "@tanstack/react-query";
+import { inferContextFromCategory } from "@/lib/modes";
 
 export type OnboardingAnswers = {
   name: string;
@@ -97,10 +98,11 @@ export const useCompleteOnboarding = () => {
       const { error: idErr } = await supabase.from("identities").insert(identityRows as any);
       if (idErr) throw idErr;
 
-      // 3. Insertar misiones
+      // 3. Insertar misiones (con contexto inferido a partir de la categoría)
+      const withCtx = (m: any) => ({ ...m, context: inferContextFromCategory(m.category) });
       const missionRows = [
-        { ...suggestions.primary_mission, is_primary: true, user_id: uid, status: "pending" },
-        ...suggestions.secondary_missions.map((m) => ({ ...m, is_primary: false, user_id: uid, status: "pending" })),
+        { ...withCtx(suggestions.primary_mission), is_primary: true, user_id: uid, status: "pending" },
+        ...suggestions.secondary_missions.map((m) => ({ ...withCtx(m), is_primary: false, user_id: uid, status: "pending" })),
       ];
       const { error: mErr } = await supabase.from("missions").insert(missionRows as any);
       if (mErr) throw mErr;

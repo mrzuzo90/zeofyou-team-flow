@@ -3,7 +3,7 @@ import Layout from "@/components/Layout/Layout";
 import { GlassCard } from "@/components/UI/GlassCard";
 import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 import { EnergyRing } from "@/components/UI/EnergyRing";
-import { useIdentities, useUpdateIdentityStatus, useCreateIdentity, useDeleteIdentity } from "@/hooks/useIdentities";
+import { useIdentities, useUpdateIdentityStatus, useCreateIdentity, useDeleteIdentity, useUpdateIdentity } from "@/hooks/useIdentities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,14 +13,26 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Play, Pause, Moon, Trash2 } from "lucide-react";
 import { statusLabel } from "@/lib/zeofyou";
 import { toast } from "sonner";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { ContextBadge } from "@/components/Mode/ContextBadge";
+import { getMode } from "@/lib/modes";
 
 export default function Identities() {
-  const { data: identities = [] } = useIdentities();
+  const { data: allIdentities = [] } = useIdentities();
+  const { mode } = useCurrentMode();
   const updateStatus = useUpdateIdentityStatus();
+  const updateIdent = useUpdateIdentity();
   const createId = useCreateIdentity();
   const del = useDeleteIdentity();
   const [open, setOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [form, setForm] = useState({ name: "", role: "", description: "", specialty: "", color: "emerald" });
+
+  const filterByMode = mode !== "none" && !showAll;
+  const identities = filterByMode
+    ? allIdentities.filter((i) => !i.context || i.context === mode)
+    : allIdentities;
+  const hiddenCount = allIdentities.length - identities.length;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,10 +44,20 @@ export default function Identities() {
 
   return (
     <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades">
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex gap-3 text-xs">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full bg-success/10 px-2.5 py-1 text-success">● {identities.filter(i => i.status === "active").length} activos</span>
           <span className="rounded-full bg-muted/40 px-2.5 py-1 text-muted-foreground">● {identities.filter(i => i.status === "resting").length} descansando</span>
+          {filterByMode && hiddenCount > 0 && (
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(true)}>
+              Modo {getMode(mode).label} · ver todas ({hiddenCount} ocultas)
+            </Button>
+          )}
+          {!filterByMode && mode !== "none" && (
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(false)}>
+              Filtrar por modo {getMode(mode).label}
+            </Button>
+          )}
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
@@ -86,8 +108,11 @@ export default function Identities() {
 
             {id.description && <p className="mt-4 text-sm text-muted-foreground line-clamp-3">{id.description}</p>}
 
-            <div className="mt-5 flex items-center justify-between">
+            <div className="mt-4 flex items-center justify-between">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{statusLabel[id.status]}</span>
+              <ContextBadge value={id.context} onChange={(c) => updateIdent.mutate({ id: id.id, patch: { context: c as any } })} />
+            </div>
+            <div className="mt-3 flex items-center justify-end">
               <div className="flex gap-1">
                 <Button size="icon" variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
                   <Play className="h-3.5 w-3.5" />

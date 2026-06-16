@@ -15,6 +15,9 @@ import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 import { cn } from "@/lib/utils";
 import { priorityLabel, missionStatusLabel } from "@/lib/zeofyou";
 import { toast } from "sonner";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { ContextBadge } from "@/components/Mode/ContextBadge";
+import { getMode, type ModeKey } from "@/lib/modes";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
@@ -23,18 +26,27 @@ const PRIORITY_COLOR: Record<string, string> = {
 };
 
 export default function Missions() {
-  const { data: missions = [] } = useMissions();
+  const { data: allMissions = [] } = useMissions();
   const { data: identities = [] } = useIdentities();
+  const { mode } = useCurrentMode();
   const create = useCreateMission();
   const update = useUpdateMission();
   const del = useDeleteMission();
   const addXp = useAddXp();
   const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50 });
+  const [showAll, setShowAll] = useState(false);
+  const [form, setForm] = useState({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" as "" | ModeKey });
+
+  // Filtro por modo: si hay modo activo (≠ none) y no se fuerza ver todo, ocultar las que tengan contexto distinto.
+  const filterByMode = mode !== "none" && !showAll;
+  const missions = filterByMode
+    ? allMissions.filter((m) => !m.context || m.context === mode)
+    : allMissions;
 
   const primary = missions.find((m) => m.is_primary && m.status !== "completed" && m.status !== "archived");
   const others = missions.filter((m) => m.id !== primary?.id);
   const locked = !!primary; // bloquea cambios en secundarias mientras hay principal activa
+  const hiddenCount = allMissions.length - missions.length;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,9 +57,10 @@ export default function Missions() {
       priority: form.priority as any,
       assigned_identity_id: form.assigned_identity_id || null,
       xp_reward: Number(form.xp_reward),
+      context: (form.context || null) as any,
     });
     setOpen(false);
-    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50 });
+    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" });
     toast.success("Misión creada");
   };
 
@@ -79,6 +92,7 @@ export default function Missions() {
               <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", PRIORITY_COLOR[m.priority])}>{priorityLabel[m.priority]}</span>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{missionStatusLabel[m.status]}</span>
               <span className="text-[10px] text-primary">+{m.xp_reward} XP</span>
+              <ContextBadge value={m.context} size="xs" onChange={(c) => update.mutate({ id: m.id, patch: { context: c as any } })} />
             </div>
             <h3 className="font-display font-semibold leading-tight">{m.title}</h3>
             {m.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
@@ -113,7 +127,28 @@ export default function Missions() {
 
   return (
     <Layout title="Misiones" subtitle="Una principal, las demás esperan su turno">
-      <div className="mb-6 flex justify-end">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          {filterByMode ? (
+            <>
+              <span>Mostrando misiones de modo <span className="font-semibold text-foreground">{getMode(mode).label}</span></span>
+              {hiddenCount > 0 && (
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(true)}>
+                  Ver todas ({hiddenCount} ocultas)
+                </Button>
+              )}
+            </>
+          ) : (
+            <>
+              <span>Mostrando todas las misiones</span>
+              {mode !== "none" && (
+                <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(false)}>
+                  Filtrar por modo actual
+                </Button>
+              )}
+            </>
+          )}
+        </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild><Button className="gap-2 bg-gradient-emerald text-primary-foreground"><Plus className="h-4 w-4" /> Nueva misión</Button></DialogTrigger>
           <DialogContent>
@@ -141,6 +176,19 @@ export default function Missions() {
                   <SelectTrigger><SelectValue placeholder="Ninguna" /></SelectTrigger>
                   <SelectContent>
                     {identities.map((i) => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label>Contexto / modo</Label>
+                <Select value={form.context || "none"} onValueChange={(v) => setForm({ ...form, context: (v === "none" ? "" : v) as any })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">Cualquier modo</SelectItem>
+                    <SelectItem value="work">Trabajo</SelectItem>
+                    <SelectItem value="home">Casa</SelectItem>
+                    <SelectItem value="family">Familia</SelectItem>
+                    <SelectItem value="travel">Viaje</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

@@ -14,6 +14,7 @@ export type Identity = {
   energy: number;
   status: "active" | "resting" | "paused";
   total_xp: number;
+  context: "work" | "home" | "family" | "travel" | null;
 };
 
 export const useIdentities = () => {
@@ -38,6 +39,17 @@ export const useUpdateIdentityStatus = () => {
   return useMutation({
     mutationFn: async ({ id, status }: { id: string; status: Identity["status"] }) => {
       const { error } = await supabase.from("identities").update({ status }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["identities"] }),
+  });
+};
+
+export const useUpdateIdentity = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, patch }: { id: string; patch: Partial<Identity> }) => {
+      const { error } = await supabase.from("identities").update(patch as any).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["identities"] }),

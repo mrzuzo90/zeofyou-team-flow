@@ -78,6 +78,52 @@
     --sidebar-border: 218 32% 16%;
     --sidebar-ring: 160 84% 45%;
   }
+
+  /* === Modos de contexto: cambian primary/accent/gradiente sin alterar el resto === */
+  html[data-mode="home"] {
+    --primary: 28 92% 60%;
+    --primary-foreground: 24 50% 10%;
+    --primary-glow: 22 100% 70%;
+    --accent: 14 88% 62%;
+    --ring: 28 92% 60%;
+    --gradient-emerald: linear-gradient(135deg, hsl(28 92% 60%), hsl(14 88% 62%));
+    --gradient-hero: radial-gradient(ellipse at top, hsl(28 80% 30% / 0.35), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(14 80% 28% / 0.25), transparent 60%),
+                     linear-gradient(180deg, hsl(222 47% 6%), hsl(220 45% 4%));
+    --shadow-glow-emerald: 0 0 40px -8px hsl(28 95% 60% / 0.5);
+    --sidebar-primary: 28 92% 60%;
+    --sidebar-ring: 28 92% 60%;
+  }
+
+  html[data-mode="family"] {
+    --primary: 268 80% 65%;
+    --primary-foreground: 268 50% 12%;
+    --primary-glow: 280 90% 72%;
+    --accent: 320 75% 65%;
+    --ring: 268 80% 65%;
+    --gradient-emerald: linear-gradient(135deg, hsl(268 80% 65%), hsl(320 75% 65%));
+    --gradient-hero: radial-gradient(ellipse at top, hsl(268 70% 30% / 0.35), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(320 70% 28% / 0.25), transparent 60%),
+                     linear-gradient(180deg, hsl(255 40% 6%), hsl(255 45% 4%));
+    --shadow-glow-emerald: 0 0 40px -8px hsl(268 90% 65% / 0.5);
+    --sidebar-primary: 268 80% 65%;
+    --sidebar-ring: 268 80% 65%;
+  }
+
+  html[data-mode="travel"] {
+    --primary: 200 90% 60%;
+    --primary-foreground: 210 60% 10%;
+    --primary-glow: 195 95% 70%;
+    --accent: 180 75% 55%;
+    --ring: 200 90% 60%;
+    --gradient-emerald: linear-gradient(135deg, hsl(200 90% 60%), hsl(180 75% 55%));
+    --gradient-hero: radial-gradient(ellipse at top, hsl(200 80% 28% / 0.35), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(180 70% 24% / 0.25), transparent 60%),
+                     linear-gradient(180deg, hsl(215 50% 5%), hsl(215 50% 3%));
+    --shadow-glow-emerald: 0 0 40px -8px hsl(200 95% 60% / 0.5);
+    --sidebar-primary: 200 90% 60%;
+    --sidebar-ring: 200 90% 60%;
+  }
 }
 
 @layer base {

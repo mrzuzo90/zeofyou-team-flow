@@ -4,8 +4,13 @@ import { AppSidebar } from "./AppSidebar";
 import { BottomNav } from "./BottomNav";
 import { TopBar } from "./TopBar";
 import { PrivacyShield } from "@/components/UI/PrivacyShield";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { useModeSuggestion } from "@/hooks/useModeSuggestion";
 
-export const Layout = ({ children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }) => (
+export const Layout = ({ children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }) => {
+  useCurrentMode(); // aplica data-mode al html
+  useModeSuggestion();
+  return (
   <SidebarProvider defaultOpen>
     <div className="flex min-h-screen w-full">
       <div className="hidden lg:block">
@@ -21,6 +26,7 @@ export const Layout = ({ children, title, subtitle }: { children: ReactNode; tit
       <PrivacyShield />
     </div>
   </SidebarProvider>
-);
+  );
+};
 
 export default Layout;
