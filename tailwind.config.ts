@@ -87,6 +87,8 @@ export default {
         "gradient-hero": "var(--gradient-hero)",
         "gradient-card": "var(--gradient-card)",
         "gradient-emerald": "var(--gradient-emerald)",
+        "gradient-aurora": "var(--gradient-aurora)",
+        "gradient-violet": "var(--gradient-violet)",
         "gradient-night": "var(--gradient-night)",
         "gradient-glow": "var(--gradient-glow)",
       },
@@ -94,6 +96,8 @@ export default {
         glass: "var(--shadow-glass)",
         "glow-emerald": "var(--shadow-glow-emerald)",
         "glow-blue": "var(--shadow-glow-blue)",
+        aurora: "var(--shadow-aurora)",
+        dock: "var(--shadow-dock)",
         elevated: "var(--shadow-elevated)",
       },
       keyframes: {

@@ -23,16 +23,24 @@ export function TwoMinWidget() {
   };
 
   return (
-    <GlassCard className="p-5">
-      <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-        <Zap className="h-3.5 w-3.5 text-warning" /> Acción de 2 minutos
+    <GlassCard className="relative overflow-hidden p-5">
+      <div className="pointer-events-none absolute -right-6 -top-6 opacity-10">
+        <Zap className="h-24 w-24 text-warning" />
+      </div>
+      <div className="inline-flex items-center gap-1.5 rounded-full bg-warning/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-warning">
+        <Zap className="h-3 w-3" /> Acción de 2 minutos
       </div>
       <p className="mt-3 font-display text-base font-semibold leading-snug">{action.text}</p>
       <div className="mt-4 flex gap-2">
-        <Button size="sm" onClick={done} className="gap-1.5 bg-gradient-emerald text-primary-foreground">
+        <Button size="sm" onClick={done} className="ios-tap gap-1.5 rounded-xl bg-foreground text-background hover:bg-foreground/90">
           <Check className="h-3.5 w-3.5" /> Hecho
         </Button>
-        <Button size="sm" variant="ghost" onClick={() => setSeed(Math.floor(Math.random() * 1000))} className="gap-1.5">
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => setSeed(Math.floor(Math.random() * 1000))}
+          className="ios-tap gap-1.5 rounded-xl border border-border/60 bg-card/40"
+        >
           <RefreshCw className="h-3.5 w-3.5" /> Otra
         </Button>
       </div>

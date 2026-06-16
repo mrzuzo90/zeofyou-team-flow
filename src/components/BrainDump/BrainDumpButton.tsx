@@ -90,7 +90,7 @@ export function BrainDumpButton() {
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button
-          className="fixed bottom-24 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-emerald text-primary-foreground shadow-glow-emerald transition-transform hover:scale-105 lg:bottom-6"
+          className="ios-tap fixed bottom-32 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-aurora text-background shadow-aurora ring-4 ring-background/70 transition-transform hover:scale-105 lg:bottom-6"
           aria-label="Vaciar la cabeza"
         >
           <Brain className="h-6 w-6" />
