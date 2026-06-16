@@ -140,7 +140,7 @@ export default function Missions() {
               </Button>
             )}
           </div>
-          <Button size="icon" variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(m.id)}>
+          <Button size="icon" aria-label={`Eliminar misión ${m.title}`} variant="ghost" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(m.id)}>
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>
@@ -149,7 +149,7 @@ export default function Missions() {
   };
 
   return (
-    <Layout title="Misiones" subtitle="Una principal, las demás esperan su turno">
+    <Layout title="Misiones" subtitle="Una principal, las demás esperan su turno" seo={{ title: "Misiones y proyectos | Zeofyou", description: "Tu misión principal y el resto de proyectos en curso. Largo plazo con progreso 0-100.", path: "/proyectos" }}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {filterByMode ? (

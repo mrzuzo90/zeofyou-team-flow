@@ -73,7 +73,7 @@ export default function Focus() {
   const activeIdentity = useMemo(() => identities.find((i) => i.id === identityId), [identities, identityId]);
 
   return (
-    <Layout title="Focus" subtitle="Una identidad, una misión, un bloque de tiempo">
+    <Layout title="Focus" subtitle="Una identidad, una misión, un bloque de tiempo" seo={{ title: "Focus · sesión profunda | Zeofyou", description: "Entra en focus con una identidad y una misión: pomodoros, modo privacidad y registro automático.", path: "/enfoque" }}>
       <div className="mx-auto max-w-2xl">
         <GlassCard glow="emerald" className="p-6 md:p-10">
           {/* Selectores */}
@@ -136,11 +136,11 @@ export default function Focus() {
             </div>
 
             <div className="mt-6 flex items-center gap-3">
-              <Button size="lg" variant="outline" onClick={reset} disabled={!running && secondsLeft === duration * 60}><RotateCcw className="h-4 w-4" /></Button>
-              <Button size="lg" className="h-14 gap-2 px-8 bg-gradient-emerald text-primary-foreground hover:opacity-90" onClick={() => setRunning((r) => !r)}>
+              <Button size="lg" aria-label="Reiniciar temporizador" variant="outline" onClick={reset} disabled={!running && secondsLeft === duration * 60}><RotateCcw className="h-4 w-4" /></Button>
+              <Button size="lg" aria-label={running ? "Pausar sesión de focus" : "Iniciar sesión de focus"} className="h-14 gap-2 px-8 bg-gradient-emerald text-primary-foreground hover:opacity-90" onClick={() => setRunning((r) => !r)}>
                 {running ? <><Pause className="h-5 w-5" /> Pausar</> : <><Play className="h-5 w-5" /> {secondsLeft === duration * 60 ? "Empezar" : "Reanudar"}</>}
               </Button>
-              <Button size="lg" variant="outline" onClick={enable} title="Pausa privada"><EyeOff className="h-4 w-4" /></Button>
+              <Button size="lg" aria-label="Activar pausa privada" variant="outline" onClick={enable} title="Pausa privada"><EyeOff className="h-4 w-4" /></Button>
             </div>
           </div>
         </GlassCard>

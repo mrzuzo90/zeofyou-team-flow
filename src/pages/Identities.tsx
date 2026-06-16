@@ -43,7 +43,7 @@ export default function Identities() {
   };
 
   return (
-    <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades">
+    <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades" seo={{ title: "Identidades internas | Zeofyou", description: "Gestiona tus identidades internas: activa, pausa o crea nuevos roles dentro de tu equipo mental.", path: "/identidades" }}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full bg-success/10 px-2.5 py-1 text-success">● {identities.filter(i => i.status === "active").length} activos</span>
@@ -114,16 +114,16 @@ export default function Identities() {
             </div>
             <div className="mt-3 flex items-center justify-end">
               <div className="flex gap-1">
-                <Button size="icon" variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
+                <Button size="icon" aria-label={`Activar identidad ${id.name}`} variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
                   <Play className="h-3.5 w-3.5" />
                 </Button>
-                <Button size="icon" variant={id.status === "resting" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "resting" })} title="Descansar">
+                <Button size="icon" aria-label={`Poner a descansar ${id.name}`} variant={id.status === "resting" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "resting" })} title="Descansar">
                   <Moon className="h-3.5 w-3.5" />
                 </Button>
-                <Button size="icon" variant={id.status === "paused" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "paused" })} title="Pausar">
+                <Button size="icon" aria-label={`Pausar identidad ${id.name}`} variant={id.status === "paused" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "paused" })} title="Pausar">
                   <Pause className="h-3.5 w-3.5" />
                 </Button>
-                <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(id.id)} title="Eliminar">
+                <Button size="icon" aria-label={`Eliminar identidad ${id.name}`} variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(id.id)} title="Eliminar">
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </div>

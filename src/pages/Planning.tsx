@@ -16,7 +16,7 @@ export default function Planning() {
   const cell = (d: number, b: number) => active[(d + b) % Math.max(1, active.length)];
 
   return (
-    <Layout title="Agenda semanal" subtitle="Equilibra qué identidad lleva cada bloque del día">
+    <Layout title="Agenda semanal" subtitle="Equilibra qué identidad lleva cada bloque del día" seo={{ title: "Agenda semanal | Zeofyou", description: "Planifica tu semana asignando una identidad a cada bloque para equilibrar tu energía.", path: "/planificacion" }}>
       <GlassCard className="p-4 md:p-6 overflow-x-auto">
         <div className="grid min-w-[640px] grid-cols-8 gap-2">
           <div />

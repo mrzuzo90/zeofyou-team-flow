@@ -57,7 +57,7 @@ export default function Insights() {
   };
 
   return (
-    <Layout title="Insights" subtitle="Tu semana, tus patrones, tus áreas de mejora">
+    <Layout title="Insights" subtitle="Tu semana, tus patrones, tus áreas de mejora" seo={{ title: "Insights semanales | Zeofyou", description: "Patrones de energía, focus y misiones de tu semana en Zeofyou.", path: "/insights" }}>
       <div className="grid gap-4 sm:grid-cols-3">
         <GlassCard className="p-5">
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Focus acumulado</div>
