@@ -35,7 +35,19 @@ export default function Missions() {
   const addXp = useAddXp();
   const [open, setOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const [form, setForm] = useState({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" as "" | ModeKey });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    is_primary: false,
+    priority: "medium",
+    assigned_identity_id: "",
+    xp_reward: 50,
+    context: "" as "" | ModeKey,
+    kind: "task" as "task" | "long_term",
+    horizon: "month" as "week" | "month" | "quarter" | "year",
+    target_hours: "",
+    progress_mode: "manual" as "manual" | "time",
+  });
 
   // Filtro por modo: si hay modo activo (≠ none) y no se fuerza ver todo, ocultar las que tengan contexto distinto.
   const filterByMode = mode !== "none" && !showAll;
@@ -50,6 +62,7 @@ export default function Missions() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const targetMin = form.kind === "long_term" && form.target_hours ? Math.round(Number(form.target_hours) * 60) : null;
     await create.mutateAsync({
       title: form.title,
       description: form.description,
@@ -58,9 +71,13 @@ export default function Missions() {
       assigned_identity_id: form.assigned_identity_id || null,
       xp_reward: Number(form.xp_reward),
       context: (form.context || null) as any,
+      kind: form.kind,
+      horizon: form.kind === "long_term" ? form.horizon : null,
+      target_minutes: targetMin,
+      progress_mode: form.kind === "long_term" ? form.progress_mode : "manual",
     });
     setOpen(false);
-    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" });
+    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "", kind: "task", horizon: "month", target_hours: "", progress_mode: "manual" });
     toast.success("Misión creada");
   };
 
