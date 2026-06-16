@@ -12,6 +12,8 @@ import { usePrivacy } from "@/contexts/PrivacyContext";
 import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 import { Play, Pause, RotateCcw, EyeOff } from "lucide-react";
 import { toast } from "sonner";
+import { MagneticButton } from "@/components/Motion/MagneticButton";
+import { cn } from "@/lib/utils";
 
 export default function Focus() {
   const { data: identities = [] } = useIdentities();
@@ -123,8 +125,8 @@ export default function Focus() {
                 {activeIdentity && (
                   <div className="mb-3"><IdentityAvatar name={activeIdentity.name} color={activeIdentity.color} status={activeIdentity.status} /></div>
                 )}
-                <div className="font-display text-6xl font-bold tabular-nums">{mm}:{ss}</div>
-                <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{running ? "En foco" : "Listo para empezar"}</div>
+                <div className={cn("font-display text-6xl font-bold tabular-nums", running && "drop-shadow-[0_0_20px_hsl(var(--primary)/0.6)]")}>{mm}:{ss}</div>
+                <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.24em] text-muted-foreground">{running ? "En foco" : "Listo para empezar"}</div>
               </div>
             </div>
 
@@ -137,9 +139,17 @@ export default function Focus() {
 
             <div className="mt-6 flex items-center gap-3">
               <Button size="lg" aria-label="Reiniciar temporizador" variant="outline" onClick={reset} disabled={!running && secondsLeft === duration * 60}><RotateCcw className="h-4 w-4" /></Button>
-              <Button size="lg" aria-label={running ? "Pausar sesión de focus" : "Iniciar sesión de focus"} className="h-14 gap-2 px-8 bg-gradient-emerald text-primary-foreground hover:opacity-90" onClick={() => setRunning((r) => !r)}>
+              <MagneticButton
+                aria-label={running ? "Pausar sesión de focus" : "Iniciar sesión de focus"}
+                cursorLabel={running ? "Pausar" : "Empezar"}
+                onClick={() => setRunning((r) => !r)}
+                className={cn(
+                  "ios-tap inline-flex h-14 items-center justify-center gap-2 rounded-full bg-gradient-emerald px-8 text-base font-semibold text-primary-foreground shadow-glow-emerald hover:opacity-95",
+                  running && "animate-[pulse_2.4s_ease-in-out_infinite]",
+                )}
+              >
                 {running ? <><Pause className="h-5 w-5" /> Pausar</> : <><Play className="h-5 w-5" /> {secondsLeft === duration * 60 ? "Empezar" : "Reanudar"}</>}
-              </Button>
+              </MagneticButton>
               <Button size="lg" aria-label="Activar pausa privada" variant="outline" onClick={enable} title="Pausa privada"><EyeOff className="h-4 w-4" /></Button>
             </div>
           </div>
