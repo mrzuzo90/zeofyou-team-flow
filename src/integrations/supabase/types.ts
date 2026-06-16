@@ -137,6 +137,7 @@ export type Database = {
         Row: {
           avatar: string | null
           color: string
+          context: string | null
           created_at: string
           description: string | null
           energy: number
@@ -152,6 +153,7 @@ export type Database = {
         Insert: {
           avatar?: string | null
           color?: string
+          context?: string | null
           created_at?: string
           description?: string | null
           energy?: number
@@ -167,6 +169,7 @@ export type Database = {
         Update: {
           avatar?: string | null
           color?: string
+          context?: string | null
           created_at?: string
           description?: string | null
           energy?: number
@@ -185,6 +188,7 @@ export type Database = {
         Row: {
           assigned_identity_id: string | null
           category: string | null
+          context: string | null
           created_at: string
           description: string | null
           due_date: string | null
@@ -200,6 +204,7 @@ export type Database = {
         Insert: {
           assigned_identity_id?: string | null
           category?: string | null
+          context?: string | null
           created_at?: string
           description?: string | null
           due_date?: string | null
@@ -215,6 +220,7 @@ export type Database = {
         Update: {
           assigned_identity_id?: string | null
           category?: string | null
+          context?: string | null
           created_at?: string
           description?: string | null
           due_date?: string | null
@@ -277,10 +283,12 @@ export type Database = {
         Row: {
           avatar_url: string | null
           created_at: string
+          current_mode: string
           display_name: string | null
           id: string
           last_active_at: string | null
           level: number
+          mode_auto_suggest: boolean
           onboarding_completed: boolean
           preferences: Json
           streak_days: number
@@ -290,10 +298,12 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           created_at?: string
+          current_mode?: string
           display_name?: string | null
           id: string
           last_active_at?: string | null
           level?: number
+          mode_auto_suggest?: boolean
           onboarding_completed?: boolean
           preferences?: Json
           streak_days?: number
@@ -303,10 +313,12 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           created_at?: string
+          current_mode?: string
           display_name?: string | null
           id?: string
           last_active_at?: string | null
           level?: number
+          mode_auto_suggest?: boolean
           onboarding_completed?: boolean
           preferences?: Json
           streak_days?: number
