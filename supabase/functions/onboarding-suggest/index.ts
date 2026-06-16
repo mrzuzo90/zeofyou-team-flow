@@ -1,42 +1,50 @@
-import { generateText, Output } from "npm:ai";
-import { z } from "npm:zod";
+import { generateText } from "npm:ai";
 import { createLovableAiGatewayProvider, corsHeaders } from "../_shared/ai-gateway.ts";
 
-const InputSchema = z.object({
-  name: z.string().min(1),
-  role: z.string().optional().default(""),
-  life_context: z.string().optional().default(""),
-  ambitions: z.array(z.string()).default([]),
-  current_projects: z.string().optional().default(""),
-  concerns: z.string().optional().default(""),
-});
+const COLORS = ["emerald", "violet", "sky", "amber", "rose", "indigo"];
 
-const COLORS = ["emerald", "violet", "sky", "amber", "rose", "indigo"] as const;
+type Suggestions = {
+  identities: { name: string; role: string; specialty: string; description: string; color: string; energy: number }[];
+  primary_mission: { title: string; description: string; category: string; priority: string; xp_reward: number };
+  secondary_missions: { title: string; description: string; category: string; priority: string; xp_reward: number }[];
+};
 
-const OutputSchema = z.object({
-  identities: z.array(z.object({
-    name: z.string(),
-    role: z.string(),
-    specialty: z.string(),
-    description: z.string(),
-    color: z.enum(COLORS),
-    energy: z.number().min(40).max(100),
-  })).min(3).max(5),
-  primary_mission: z.object({
-    title: z.string(),
-    description: z.string(),
-    category: z.string(),
-    priority: z.enum(["low", "medium", "high"]),
-    xp_reward: z.number().min(20).max(200),
-  }),
-  secondary_missions: z.array(z.object({
-    title: z.string(),
-    description: z.string(),
-    category: z.string(),
-    priority: z.enum(["low", "medium", "high"]),
-    xp_reward: z.number().min(20).max(150),
-  })).min(2).max(4),
-});
+function extractJson(text: string): any {
+  const cleaned = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+  if (start === -1 || end === -1) throw new Error("No JSON object in response");
+  return JSON.parse(cleaned.slice(start, end + 1));
+}
+
+function sanitize(s: any): Suggestions {
+  const norm = (p: string) => ["low", "medium", "high"].includes(p) ? p : "medium";
+  const color = (c: string) => COLORS.includes(c) ? c : COLORS[Math.floor(Math.random() * COLORS.length)];
+  return {
+    identities: (s.identities ?? []).slice(0, 5).map((i: any) => ({
+      name: String(i.name ?? "Identidad"),
+      role: String(i.role ?? ""),
+      specialty: String(i.specialty ?? ""),
+      description: String(i.description ?? ""),
+      color: color(i.color),
+      energy: Math.max(40, Math.min(100, Number(i.energy) || 80)),
+    })),
+    primary_mission: {
+      title: String(s.primary_mission?.title ?? "Misión principal"),
+      description: String(s.primary_mission?.description ?? ""),
+      category: String(s.primary_mission?.category ?? "personal"),
+      priority: norm(s.primary_mission?.priority),
+      xp_reward: Math.max(20, Math.min(200, Number(s.primary_mission?.xp_reward) || 100)),
+    },
+    secondary_missions: (s.secondary_missions ?? []).slice(0, 4).map((m: any) => ({
+      title: String(m.title ?? "Misión"),
+      description: String(m.description ?? ""),
+      category: String(m.category ?? "general"),
+      priority: norm(m.priority),
+      xp_reward: Math.max(20, Math.min(150, Number(m.xp_reward) || 60)),
+    })),
+  };
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -49,37 +57,40 @@ Deno.serve(async (req) => {
       });
     }
 
-    const raw = await req.json();
-    const input = InputSchema.parse(raw);
+    const input = await req.json();
+    const ambitions: string[] = Array.isArray(input.ambitions) ? input.ambitions : [];
 
     const gateway = createLovableAiGatewayProvider(key);
     const model = gateway("google/gemini-3-flash-preview");
 
-    const system = `Eres un coach de productividad y desarrollo personal. Tu tarea es analizar el contexto de un usuario y proponerle:
-1. Entre 3 y 5 "identidades internas" personalizadas (facetas de sí mismo, como un equipo directivo). Cada una con rol, especialidad, descripción breve y color.
-2. Una misión principal accionable para los próximos 30 días, derivada de sus ambiciones y proyectos.
-3. 2 a 4 misiones secundarias complementarias.
-
-Tono: cálido, específico, en español. Evita genéricos. Conecta cada identidad con la realidad concreta del usuario (familia, profesión, preocupaciones, proyectos). Las misiones deben ser SMART y ejecutables esta semana o este mes.`;
+    const system = `Eres un coach de productividad. Devuelve ÚNICAMENTE un objeto JSON válido sin markdown ni texto extra, con esta forma exacta:
+{
+  "identities": [{ "name": string, "role": string, "specialty": string, "description": string, "color": "emerald"|"violet"|"sky"|"amber"|"rose"|"indigo", "energy": number(40-100) }],
+  "primary_mission": { "title": string, "description": string, "category": string, "priority": "low"|"medium"|"high", "xp_reward": number(20-200) },
+  "secondary_missions": [{ "title": string, "description": string, "category": string, "priority": "low"|"medium"|"high", "xp_reward": number(20-150) }]
+}
+Reglas: 3-5 identidades, 2-4 misiones secundarias, español, tono cálido, conecta con la realidad del usuario (familia, trabajo, ambiciones, preocupaciones). Misiones SMART y ejecutables este mes.`;
 
     const prompt = `Datos del usuario:
-- Nombre: ${input.name}
+- Nombre: ${input.name ?? ""}
 - Rol/ocupación: ${input.role || "no indicado"}
-- Contexto vital (familia, situación): ${input.life_context || "no indicado"}
-- Ambiciones: ${input.ambitions.length ? input.ambitions.join(" | ") : "no indicadas"}
+- Contexto vital: ${input.life_context || "no indicado"}
+- Ambiciones: ${ambitions.length ? ambitions.join(" | ") : "no indicadas"}
 - Proyectos actuales: ${input.current_projects || "no indicados"}
-- Preocupaciones/bloqueos: ${input.concerns || "no indicados"}
+- Preocupaciones: ${input.concerns || "no indicadas"}
 
-Devuelve identidades coherentes con su vida real y misiones que ayuden a destrabar sus preocupaciones y avanzar sus ambiciones.`;
+Responde solo con el JSON.`;
 
-    const { experimental_output } = await generateText({
+    const { text } = await generateText({
       model,
       system,
       prompt,
-      experimental_output: Output.object({ schema: OutputSchema }),
+      maxOutputTokens: 2000,
     });
 
-    return new Response(JSON.stringify(experimental_output), {
+    const parsed = sanitize(extractJson(text));
+
+    return new Response(JSON.stringify(parsed), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (err: any) {
