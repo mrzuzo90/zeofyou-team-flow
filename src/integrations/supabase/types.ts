@@ -71,6 +71,33 @@ export type Database = {
         }
         Relationships: []
       }
+      coach_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          identity_voice: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          identity_voice?: string | null
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          identity_voice?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_metrics: {
         Row: {
           avg_energy: number
@@ -243,6 +270,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      mission_milestones: {
+        Row: {
+          created_at: string
+          done: boolean
+          id: string
+          mission_id: string
+          position: number
+          title: string
+          updated_at: string
+          user_id: string
+          weight: number
+        }
+        Insert: {
+          created_at?: string
+          done?: boolean
+          id?: string
+          mission_id: string
+          position?: number
+          title: string
+          updated_at?: string
+          user_id: string
+          weight?: number
+        }
+        Update: {
+          created_at?: string
+          done?: boolean
+          id?: string
+          mission_id?: string
+          position?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mission_milestones_mission_id_fkey"
+            columns: ["mission_id"]
+            isOneToOne: false
+            referencedRelation: "missions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       missions: {
         Row: {
