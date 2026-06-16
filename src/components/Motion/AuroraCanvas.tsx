@@ -206,16 +206,3 @@ export function AuroraCanvas() {
     />
   );
 }
-
-  if (reduced) {
-    return <div className="aurora-bg" aria-hidden />;
-  }
-
-  return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full opacity-90"
-    />
-  );
-}
