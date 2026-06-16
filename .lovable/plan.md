@@ -1,58 +1,56 @@
-# Modo claro/oscuro con memoria por contexto
+# Premium pass — Misiones, Focus, Identidades, Insights, Perfil + Sidebar
 
-Añadir un selector claro/oscuro independiente para cada **modo de contexto** (work, home, family, none). El tema preferido de cada modo se recuerda, de forma que al cambiar de "Trabajo" a "Familia" se aplica automáticamente el tema que el usuario eligió para ese contexto (p. ej. oscuro en Trabajo, claro en Familia).
+Continuación del plan de diseño "Award-grade". Aplico los primitives de motion ya construidos (`KineticHeading`, `AnimatedNumber`, `MagneticButton`, `TiltCard`) a las cinco pantallas restantes, refino el `AppSidebar` con indicador animado y hago QA visual de las transiciones de página. No toco lógica de datos ni de negocio.
 
-## Comportamiento
+## 1. Misiones (`src/pages/Missions.tsx`)
+- Cabeceras de sección (Primaria, Secundarias, Trabajadas hoy…) con `KineticHeading splitBy="word"` y entrada en stagger.
+- KPIs de la cabecera (XP del día, racha, completadas) con `AnimatedNumber`.
+- Tarjeta de misión envuelta en `TiltCard` (max 6° en desktop, desactivado en touch/reduced-motion).
+- Botones de acción primarios (Completar, Empezar) con `MagneticButton` + glow sutil al hover.
+- Barra de progreso de misión: añadir capa shimmer aurora encima de la barra existente.
 
-- Cada modo (`work`, `home`, `family`, `none`) tiene su propio tema (`dark` o `light`).
-- Al cambiar de modo: se aplica el tema guardado para ese modo (fallback `dark`).
-- Al pulsar el toggle: cambia el tema **del modo activo** y se guarda.
-- Persistencia: `localStorage` (`zeofyou.themeByMode`) para respuesta instantánea + sincronización al perfil del usuario en backend para que viaje entre dispositivos.
-- Respeta `prefers-color-scheme` solo la **primera vez** que un modo no tiene preferencia guardada.
+## 2. Focus (`src/pages/Focus.tsx`)
+- `KineticHeading` para el título (nombre de identidad) con `splitBy="char"`.
+- Contador del Pomodoro como `AnimatedNumber` (segundos y minutos, fade entre cambios).
+- Botones Start/Pause/Stop como `MagneticButton`; el botón principal con "breathing glow" (animación lenta sobre `box-shadow` aurora) durante la sesión activa.
+- Tarjeta del objetivo de sesión con `TiltCard` ligero.
 
-## Diseño de los tokens claros
+## 3. Identidades (`src/pages/Identities.tsx`)
+- Título de página con `KineticHeading`.
+- Cada tarjeta de identidad envuelta en `TiltCard` y con `MagneticButton` para la acción primaria.
+- Métricas por identidad (energía, misiones, XP) con `AnimatedNumber`.
+- Reveal con stagger al montar la grilla.
 
-Mantener la misma identidad Aurora (verde esmeralda + violeta + azul) ajustando luminosidad para garantizar contraste WCAG AA en ambos modos:
+## 4. Insights (`src/pages/Insights.tsx`)
+- Título con `KineticHeading`.
+- Big numbers del resumen (XP semanal, % de cumplimiento, racha) con `AnimatedNumber` y eyebrow mono.
+- Pequeños sparklines/heatmap: aplicar `TiltCard` al contenedor principal de la tarjeta (sin tocar la lógica del gráfico).
+- Filtros (chips de semana/mes) como `MagneticButton`.
 
-- Fondo claro: `--background: 220 30% 97%`, superficies `220 30% 100%` / `220 25% 94%`.
-- Texto: `--foreground: 222 35% 12%`, `--muted-foreground: 220 15% 35%`.
-- Primary/accent: mismos tonos, luminosidad reducida (`primary 142 65% 38%`, `accent 252 70% 50%`) para legibilidad sobre blanco.
-- Gradientes hero, glass y sombras reformulados (radiales más suaves, sombras con `hsl(220 40% 20% / 0.12)`).
-- Sidebar, popover, border, input ajustados al esquema claro.
-- Variantes claras también para los overrides `data-mode="home"` y `data-mode="family"` (los tres modos × dos temas).
+## 5. Perfil (`src/pages/Profile.tsx`)
+- `KineticHeading` en cabecera.
+- XP, nivel, racha y misiones completadas con `AnimatedNumber`.
+- "Guardar", "Cerrar sesión" como `MagneticButton`.
+- La tarjeta de identidad del usuario envuelta en `TiltCard`.
 
-## Cambios técnicos
+## 6. Sidebar desktop (`src/components/Layout/AppSidebar.tsx`)
+- Indicador activo animado tipo "liquid": una franja `layoutId="sidebar-active"` (Framer Motion) que se desliza entre items con `spring`.
+- Halo aurora sutil detrás del item activo, sincronizado con el modo de contexto (usa los tokens existentes `--primary` / `--gradient-aurora`).
+- Hover con sombra elevada y pequeño desplazamiento; iconos con micro-bounce.
+- Colapsado (icon-only) mantiene el indicador como punto luminoso lateral.
 
-1. **`src/index.css`**
-   - Añadir bloque `html[data-theme="light"] :root` con todos los tokens semánticos en versión clara.
-   - Añadir overrides `html[data-theme="light"][data-mode="home"]` y `…[data-mode="family"]` (primary/accent/gradiente coherentes con el modo).
-   - Revisar `--shadow-glass`, `--gradient-card`, `--gradient-hero` para que funcionen en claro (menos opacidad oscura, más blur).
-   - Asegurar que ningún componente use clases hardcoded tipo `text-white` (auditar rápido y reemplazar si aparece).
+## 7. QA visual de transiciones de página
+- Verificar que `PageTransition` no produce flash blanco al cambiar de ruta en tema claro y oscuro.
+- Asegurar que el "curtain" respeta el gradiente del modo actual (work/home/family/travel) y no se queda visible si la ruta cambia rápido.
+- Revisar que `KineticHeading` no re-anima en cada `setState` (key estable por ruta+título).
+- Capturas en desktop 1440 y móvil 390 para Dashboard, Misiones, Focus, Identidades, Insights, Perfil — claro y oscuro.
 
-2. **Nuevo `src/hooks/useTheme.ts`**
-   - Estado `themeByMode: Record<ModeKey, 'light' | 'dark'>` persistido en `localStorage`.
-   - Aplica `document.documentElement.dataset.theme` en función del modo activo (`useCurrentMode`).
-   - API: `theme`, `toggleTheme()`, `setThemeForMode(mode, theme)`.
-   - Sincroniza con `profile.preferences.themeByMode` (lectura inicial y escritura al cambiar) vía `useUpdateProfile`.
-
-3. **`src/hooks/useCurrentMode.ts`**
-   - Sin cambios funcionales; `useTheme` reacciona a `mode`.
-
-4. **Nuevo `src/components/UI/ThemeToggle.tsx`**
-   - Botón con icono Sun/Moon (lucide-react), animación spring (Framer Motion), tooltip "Tema para modo {modo}".
-   - Glassmorphism coherente con `TopBar`.
-
-5. **`src/components/Layout/TopBar.tsx`**
-   - Insertar `<ThemeToggle />` junto al `ModeSwitcher`.
-
-6. **`src/pages/Profile.tsx`**
-   - Sección "Tema por modo": cuatro filas (Trabajo, Hogar, Familia, Sin modo) con su switch claro/oscuro, leyendo/escribiendo desde `useTheme`.
-
-7. **Migración suave**
-   - Si `profile.preferences.theme` existe (legacy), úsalo como tema por defecto para todos los modos en la primera carga, luego se sobrescribe individualmente.
+## Accesibilidad y rendimiento
+- Todos los efectos pesados envueltos en `useReducedMotion()` y desactivados en touch (`window.matchMedia('(hover: none)')`).
+- `TiltCard` solo activo con puntero fino; degrada a card normal en táctil.
+- No se introduce ninguna dependencia nueva.
 
 ## Fuera de alcance
-
-- No se toca lógica de modos, misiones, focus ni datos.
-- No se cambia tipografía ni layout.
-- No se añade modo "sistema/auto" como tercera opción (solo claro/oscuro, según pidió el usuario); `prefers-color-scheme` se usa solo como fallback inicial.
+- Lógica de negocio, datos, RLS, edge functions.
+- Nuevos colores o tipografías (se usan los tokens y fuentes ya definidos).
+- Onboarding, Login, Signup, Planning, HandsFree, Transition.

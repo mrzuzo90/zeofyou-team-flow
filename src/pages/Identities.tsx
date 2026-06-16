@@ -16,6 +16,8 @@ import { toast } from "sonner";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { ContextBadge } from "@/components/Mode/ContextBadge";
 import { getMode } from "@/lib/modes";
+import { TiltCard } from "@/components/Motion/TiltCard";
+import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
 
 export default function Identities() {
   const { data: allIdentities = [] } = useIdentities();
@@ -91,44 +93,46 @@ export default function Identities() {
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {identities.map((id) => (
-          <GlassCard key={id.id} className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex items-start gap-4">
-                <IdentityAvatar name={id.name} color={id.color} status={id.status} size="lg" />
-                <div>
-                  <div className="font-display text-lg font-bold leading-tight">{id.name}</div>
-                  <div className="text-xs text-muted-foreground">{id.role}</div>
-                  {id.specialty && <div className="mt-1 inline-block rounded-full bg-muted/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{id.specialty}</div>}
+          <TiltCard key={id.id} intensity={6} className="rounded-3xl">
+            <GlassCard className="p-5">
+              <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  <IdentityAvatar name={id.name} color={id.color} status={id.status} size="lg" />
+                  <div>
+                    <div className="font-display text-lg font-bold leading-tight">{id.name}</div>
+                    <div className="text-xs text-muted-foreground">{id.role}</div>
+                    {id.specialty && <div className="mt-1 inline-block rounded-full bg-muted/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{id.specialty}</div>}
+                  </div>
+                </div>
+                <EnergyRing value={id.energy} size={44} color={id.color}>
+                  <span className="text-[10px] font-bold tabular-nums"><AnimatedNumber value={id.energy} /></span>
+                </EnergyRing>
+              </div>
+
+              {id.description && <p className="mt-4 text-sm text-muted-foreground line-clamp-3">{id.description}</p>}
+
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{statusLabel[id.status]}</span>
+                <ContextBadge value={id.context} onChange={(c) => updateIdent.mutate({ id: id.id, patch: { context: c as any } })} />
+              </div>
+              <div className="mt-3 flex items-center justify-end">
+                <div className="flex gap-1">
+                  <Button size="icon" aria-label={`Activar identidad ${id.name}`} variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
+                    <Play className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" aria-label={`Poner a descansar ${id.name}`} variant={id.status === "resting" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "resting" })} title="Descansar">
+                    <Moon className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" aria-label={`Pausar identidad ${id.name}`} variant={id.status === "paused" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "paused" })} title="Pausar">
+                    <Pause className="h-3.5 w-3.5" />
+                  </Button>
+                  <Button size="icon" aria-label={`Eliminar identidad ${id.name}`} variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(id.id)} title="Eliminar">
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               </div>
-              <EnergyRing value={id.energy} size={44} color={id.color}>
-                <span className="text-[10px] font-bold">{id.energy}</span>
-              </EnergyRing>
-            </div>
-
-            {id.description && <p className="mt-4 text-sm text-muted-foreground line-clamp-3">{id.description}</p>}
-
-            <div className="mt-4 flex items-center justify-between">
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{statusLabel[id.status]}</span>
-              <ContextBadge value={id.context} onChange={(c) => updateIdent.mutate({ id: id.id, patch: { context: c as any } })} />
-            </div>
-            <div className="mt-3 flex items-center justify-end">
-              <div className="flex gap-1">
-                <Button size="icon" aria-label={`Activar identidad ${id.name}`} variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
-                  <Play className="h-3.5 w-3.5" />
-                </Button>
-                <Button size="icon" aria-label={`Poner a descansar ${id.name}`} variant={id.status === "resting" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "resting" })} title="Descansar">
-                  <Moon className="h-3.5 w-3.5" />
-                </Button>
-                <Button size="icon" aria-label={`Pausar identidad ${id.name}`} variant={id.status === "paused" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "paused" })} title="Pausar">
-                  <Pause className="h-3.5 w-3.5" />
-                </Button>
-                <Button size="icon" aria-label={`Eliminar identidad ${id.name}`} variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(id.id)} title="Eliminar">
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </div>
-          </GlassCard>
+            </GlassCard>
+          </TiltCard>
         ))}
       </div>
     </Layout>

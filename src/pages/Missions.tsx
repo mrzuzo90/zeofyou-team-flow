@@ -25,6 +25,9 @@ import { celebrate } from "@/lib/confetti";
 import { MISSION_TEMPLATES, type MissionTemplate } from "@/data/missionTemplates";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { TiltCard } from "@/components/Motion/TiltCard";
+import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
+import { MagneticButton } from "@/components/Motion/MagneticButton";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
@@ -172,7 +175,7 @@ export default function Missions() {
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", PRIORITY_COLOR[m.priority])}>{priorityLabel[m.priority]}</span>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{missionStatusLabel[m.status]}</span>
-              <span className="text-[10px] text-primary">+{m.xp_reward} XP</span>
+              <span className="text-[10px] text-primary">+<AnimatedNumber value={m.xp_reward} /> XP</span>
               <ContextBadge value={m.context} size="xs" onChange={(c) => update.mutate({ id: m.id, patch: { context: c as any } })} />
             </div>
             <h3 className="font-display font-semibold leading-tight">{m.title}</h3>
@@ -359,7 +362,7 @@ export default function Missions() {
             <Star className="h-4 w-4 text-warning" />
             <h2 className="font-display text-sm font-bold uppercase tracking-wider text-muted-foreground">Misión principal</h2>
           </div>
-          <div className="grid gap-4 lg:grid-cols-2"><div className="relative"><div className="absolute -inset-px rounded-2xl bg-gradient-emerald opacity-40 blur-md" />{renderCard(primary)}</div></div>
+          <div className="grid gap-4 lg:grid-cols-2"><TiltCard intensity={4} className="relative rounded-3xl"><div className="absolute -inset-px rounded-3xl bg-gradient-aurora opacity-50 blur-md" />{renderCard(primary)}</TiltCard></div>
         </section>
       )}
 
