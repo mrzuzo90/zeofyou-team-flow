@@ -108,8 +108,11 @@ export default function Identities() {
 
             {id.description && <p className="mt-4 text-sm text-muted-foreground line-clamp-3">{id.description}</p>}
 
-            <div className="mt-5 flex items-center justify-between">
+            <div className="mt-4 flex items-center justify-between">
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{statusLabel[id.status]}</span>
+              <ContextBadge value={id.context} onChange={(c) => updateIdent.mutate({ id: id.id, patch: { context: c as any } })} />
+            </div>
+            <div className="mt-3 flex items-center justify-end">
               <div className="flex gap-1">
                 <Button size="icon" variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
                   <Play className="h-3.5 w-3.5" />
