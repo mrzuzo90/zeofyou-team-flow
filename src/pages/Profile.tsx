@@ -101,7 +101,7 @@ export default function Profile() {
           {achievements.map((a) => {
             const has = unlocked.includes(a.id);
             return (
-              <GlassCard key={a.id} className={cn("p-4 border", !has && "opacity-50", has && RARITY[a.rarity] ?? RARITY.common)}>
+              <GlassCard key={a.id} className={cn("p-4 border", !has && "opacity-50", has && (RARITY[a.rarity] ?? RARITY.common))}>
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-card text-xl">{has ? "🏆" : "🔒"}</div>
                   <div className="flex-1 min-w-0">
