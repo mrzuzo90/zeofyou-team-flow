@@ -4,6 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Mission, useUpdateMission, useLogMissionTime } from "@/hooks/useMissions";
+import { MissionMilestones } from "./MissionMilestones";
 import { cn } from "@/lib/utils";
 
 const HORIZON_LABEL: Record<string, string> = {
@@ -96,6 +97,8 @@ export function MissionProgress({ mission, compact = false }: { mission: Mission
           )}
         </div>
       )}
+
+      {!compact && <MissionMilestones missionId={mission.id} />}
     </div>
   );
 }
