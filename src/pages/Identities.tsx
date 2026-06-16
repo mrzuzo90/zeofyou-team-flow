@@ -29,6 +29,7 @@ import {
   PERSONAS,
   personaCSSVars,
   personaFontClass,
+  personaFontStyle,
   resolvePersona,
   type PersonaKey,
   type PersonaPreset,
