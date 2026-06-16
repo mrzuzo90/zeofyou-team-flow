@@ -12,6 +12,7 @@ import { PageSeo, type PageSeoProps } from "@/components/SEO/PageSeo";
 import { CommandPalette } from "@/components/CommandPalette/CommandPalette";
 import { CoachDrawer } from "@/components/Coach/CoachDrawer";
 import { useGlobalHotkeys } from "@/hooks/useGlobalHotkeys";
+import { AuroraCanvas } from "@/components/Motion/AuroraCanvas";
 
 type LayoutProps = {
   children: ReactNode;
@@ -34,7 +35,7 @@ export const Layout = ({ children, title, subtitle, seo }: LayoutProps) => {
     <SidebarProvider defaultOpen>
       {seo && <PageSeo {...seo} />}
       <div className="relative flex min-h-screen w-full">
-        <div className="aurora-bg" aria-hidden="true" />
+        <AuroraCanvas />
         <div className="relative z-10 hidden lg:block">
           <AppSidebar />
         </div>

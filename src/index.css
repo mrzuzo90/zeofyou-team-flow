@@ -282,3 +282,141 @@
   50%  { transform: translate(40px, 30px) scale(1.1); }
   100% { transform: translate(-30px, 20px) scale(0.95); }
 }
+
+/* ============================================ */
+/* Premium award pass — cursor, type, kinetics  */
+/* ============================================ */
+
+@layer base {
+  :root {
+    --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  }
+  html.has-custom-cursor,
+  html.has-custom-cursor * { cursor: none !important; }
+}
+
+@layer components {
+  .font-serif { font-family: var(--font-serif); font-optical-sizing: auto; }
+  .font-mono { font-family: var(--font-mono); }
+
+  /* Cursor custom */
+  .cursor-dot {
+    position: fixed;
+    top: 0; left: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: hsl(220 25% 96%);
+    pointer-events: none;
+    z-index: 200;
+    mix-blend-mode: difference;
+    transition: width 0.28s var(--ease-ios), height 0.28s var(--ease-ios), opacity 0.2s;
+    will-change: transform;
+  }
+  .cursor-dot[data-hidden="true"] { opacity: 0; }
+  .cursor-dot[data-state="magnet"] { width: 4px; height: 4px; }
+  .cursor-dot.is-down { width: 14px; height: 14px; }
+
+  .cursor-halo {
+    position: fixed;
+    top: 0; left: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    border: 1px solid hsl(220 100% 95% / 0.35);
+    pointer-events: none;
+    z-index: 199;
+    transition: width 0.32s var(--ease-ios), height 0.32s var(--ease-ios), opacity 0.25s, background-color 0.25s, border-color 0.25s;
+    will-change: transform;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .cursor-halo[data-hidden="true"] { opacity: 0; }
+  .cursor-halo[data-state="magnet"] {
+    width: 60px; height: 60px;
+    background: hsl(252 92% 76% / 0.12);
+    border-color: hsl(252 92% 76% / 0.55);
+    backdrop-filter: blur(2px);
+  }
+  .cursor-halo[data-state="view"] {
+    width: 80px; height: 80px;
+    background: hsl(142 71% 58% / 0.15);
+    border-color: hsl(142 71% 58% / 0.5);
+  }
+  .cursor-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: hsl(220 25% 96%);
+  }
+
+  /* Borde aurora animado para tarjetas hero */
+  .aurora-border {
+    position: relative;
+    isolation: isolate;
+  }
+  .aurora-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--ang, 0deg),
+      hsl(252 92% 76%),
+      hsl(217 91% 60%),
+      hsl(142 71% 58%),
+      hsl(252 92% 76%));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    animation: aurora-rotate 8s linear infinite;
+    pointer-events: none;
+  }
+
+  /* Línea aurora animada (header / dividers) */
+  .aurora-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(252 92% 76% / 0.6), hsl(142 71% 58% / 0.6), transparent);
+    background-size: 200% 100%;
+    animation: aurora-pan 8s ease-in-out infinite;
+  }
+
+  /* Marquee */
+  .marquee {
+    display: flex;
+    gap: 3rem;
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+  }
+  .marquee > * { animation: marquee 28s linear infinite; }
+}
+
+@property --ang {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes aurora-rotate {
+  to { --ang: 360deg; }
+}
+@keyframes aurora-pan {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

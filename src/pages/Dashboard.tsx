@@ -7,13 +7,17 @@ import { useMissions } from "@/hooks/useMissions";
 import { useFocusSessions } from "@/hooks/useFocusSessions";
 import { EnergyRing } from "@/components/UI/EnergyRing";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Target, Timer, AlertTriangle, Zap, Heart, CheckCircle2, Play } from "lucide-react";
+import { ArrowRight, Sparkles, Target, Timer, AlertTriangle, Heart, CheckCircle2, Play } from "lucide-react";
 import { motion } from "framer-motion";
 import { statusLabel } from "@/lib/zeofyou";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { getMode } from "@/lib/modes";
 import { TwoMinWidget } from "@/components/Dashboard/TwoMinWidget";
 import { cn } from "@/lib/utils";
+import { KineticHeading } from "@/components/Motion/KineticHeading";
+import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
+import { TiltCard } from "@/components/Motion/TiltCard";
+import { MagneticButton } from "@/components/Motion/MagneticButton";
 
 const fadeUp = {
   initial: { opacity: 0, y: 12 },
@@ -51,6 +55,8 @@ export default function Dashboard() {
     return "Buenas noches";
   })();
 
+  const roles = ["Estratega", "Creativo", "Conector", "Sabio", "Guardián", "Explorador", "Sanador", "Constructor"];
+
   return (
     <Layout
       title={`Panel · ${greeting}, ${profile?.display_name ?? "tú"}`}
@@ -69,65 +75,88 @@ export default function Dashboard() {
         {profile && (
           <>
             <span className="flex shrink-0 items-center gap-2 rounded-full bg-card/60 border border-border/60 px-4 py-2 text-xs font-semibold">
-              🔥 {profile.streak_days} {profile.streak_days === 1 ? "día" : "días"}
+              🔥 <AnimatedNumber value={profile.streak_days} /> {profile.streak_days === 1 ? "día" : "días"}
             </span>
-            <span className="flex shrink-0 items-center gap-2 rounded-full bg-card/60 border border-border/60 px-4 py-2 text-[10px] font-black uppercase tracking-widest">
-              Nv {profile.level}
+            <span className="flex shrink-0 items-center gap-2 rounded-full bg-card/60 border border-border/60 px-4 py-2 font-mono text-[10px] font-medium uppercase tracking-[0.2em]">
+              Nv <AnimatedNumber value={profile.level} />
             </span>
           </>
         )}
       </motion.div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* HERO con halo aurora */}
+        {/* HERO con halo aurora + borde animado */}
         <GlassCard
           halo
-          className="lg:col-span-2 overflow-hidden p-0 bg-gradient-night"
+          className="lg:col-span-2 overflow-hidden p-0 bg-gradient-night aurora-border"
         >
-          <div className="relative p-6 md:p-8">
-            <div className="mb-4 inline-flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15">
-                <Sparkles className="h-3.5 w-3.5 text-accent" />
-              </span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Misión principal de hoy</span>
+          <div className="relative p-6 md:p-10">
+            {/* Marquee de roles muy sutil al fondo */}
+            <div className="pointer-events-none absolute inset-x-0 top-2 marquee opacity-[0.06]">
+              <div className="flex shrink-0 gap-12 font-serif text-6xl italic md:text-8xl">
+                {[...roles, ...roles].map((r, i) => (
+                  <span key={i}>{r}</span>
+                ))}
+              </div>
             </div>
-            {primary ? (
-              <>
-                <h2 className="font-display text-2xl font-bold leading-tight md:text-3xl text-balance">{primary.title}</h2>
-                {primary.description && <p className="mt-2 text-sm text-muted-foreground">{primary.description}</p>}
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <Button
-                    size="lg"
-                    onClick={() => nav("/enfoque")}
-                    className="ios-tap gap-2 rounded-2xl bg-gradient-aurora text-background font-display font-bold shadow-aurora hover:opacity-95"
-                  >
-                    <Play className="h-4 w-4 fill-background" /> Entrar en Focus
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
+            <div className="relative">
+              <div className="mb-4 inline-flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-accent/15">
+                  <Sparkles className="h-3.5 w-3.5 text-accent" />
+                </span>
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.22em] text-accent">
+                  Misión principal de hoy
+                </span>
+              </div>
+              {primary ? (
+                <>
+                  <KineticHeading
+                    text={primary.title}
+                    as="h2"
+                    splitBy="word"
+                    className="font-display text-3xl font-bold leading-[1.05] md:text-5xl text-balance"
+                  />
+                  {primary.description && (
+                    <p className="mt-3 max-w-xl text-sm text-muted-foreground md:text-base">{primary.description}</p>
+                  )}
+                  <div className="mt-7 flex flex-wrap items-center gap-3">
+                    <MagneticButton
+                      onClick={() => nav("/enfoque")}
+                      cursorLabel="Focus"
+                      className="ios-tap inline-flex h-12 items-center gap-2 rounded-2xl bg-gradient-aurora px-6 font-display text-sm font-bold text-background shadow-aurora"
+                    >
+                      <Play className="h-4 w-4 fill-background" /> Entrar en Focus
+                    </MagneticButton>
+                    <MagneticButton
+                      onClick={() => nav("/proyectos")}
+                      cursorLabel="Ver"
+                      className="ios-tap inline-flex h-12 items-center gap-2 rounded-2xl border border-border/60 bg-card/40 px-5 text-sm font-semibold"
+                    >
+                      Ver misiones <ArrowRight className="h-4 w-4" />
+                    </MagneticButton>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <KineticHeading
+                    text="Aún no hay misión principal"
+                    as="h2"
+                    splitBy="word"
+                    className="font-display text-3xl font-bold md:text-5xl text-balance"
+                  />
+                  <p className="mt-3 max-w-md text-sm text-muted-foreground md:text-base">
+                    Elige una misión clave para hoy y bloquea el ruido de las demás.
+                  </p>
+                  <MagneticButton
                     onClick={() => nav("/proyectos")}
-                    className="ios-tap rounded-2xl border-border/60 bg-card/40"
+                    cursorLabel="Definir"
+                    className="ios-tap mt-7 inline-flex h-12 items-center gap-2 rounded-2xl bg-gradient-aurora px-6 font-display text-sm font-bold text-background shadow-aurora"
                   >
-                    Ver misiones <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="font-display text-2xl font-bold md:text-3xl">Aún no hay misión principal</h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Elige una misión clave para hoy y bloquea el ruido de las demás.
-                </p>
-                <Button
-                  onClick={() => nav("/proyectos")}
-                  size="lg"
-                  className="ios-tap mt-6 w-full gap-2 rounded-2xl bg-gradient-aurora font-display font-bold text-background shadow-aurora hover:opacity-95 sm:w-auto"
-                >
-                  <Target className="h-4 w-4" /> Definir misión principal
-                </Button>
-              </>
-            )}
+                    <Target className="h-4 w-4" /> Definir misión principal
+                  </MagneticButton>
+                </>
+              )}
+            </div>
           </div>
         </GlassCard>
 
@@ -137,7 +166,7 @@ export default function Dashboard() {
             icon={<Heart className="h-4 w-4 text-primary" />}
             iconWrap="bg-primary/15"
             label="Energía equipo"
-            value={`${teamEnergy}%`}
+            value={<><AnimatedNumber value={teamEnergy} />%</>}
             ring={teamEnergy}
             ringColor="primary"
           />
@@ -147,7 +176,7 @@ export default function Dashboard() {
             label="Focus hoy"
             value={
               <>
-                {focusToday}
+                <AnimatedNumber value={focusToday} />
                 <span className="ml-1 text-sm font-normal text-muted-foreground">min</span>
               </>
             }
@@ -156,7 +185,7 @@ export default function Dashboard() {
             icon={<CheckCircle2 className="h-4 w-4 text-accent" />}
             iconWrap="bg-accent/15"
             label="Completadas"
-            value={completedMissions}
+            value={<AnimatedNumber value={completedMissions} />}
             className="col-span-2 lg:col-span-1"
           />
         </div>
@@ -186,20 +215,25 @@ export default function Dashboard() {
       </section>
 
       {/* Equipo */}
-      <section className="mt-8">
-        <div className="mb-4 flex items-end justify-between">
+      <section className="mt-10">
+        <div className="mb-5 flex items-end justify-between">
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Identidades</p>
-            <h2 className="font-display text-xl font-bold">Tu equipo</h2>
+            <p className="font-mono text-[10px] font-medium uppercase tracking-[0.22em] text-muted-foreground/80">
+              · 02 / Identidades
+            </p>
+            <h2 className="font-serif text-3xl font-semibold italic md:text-4xl">
+              Tu <span className="gradient-text">equipo</span>
+            </h2>
           </div>
-          <button
+          <MagneticButton
             onClick={() => nav("/identidades")}
-            className="ios-tap inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-accent"
+            cursorLabel="Ver"
+            className="ios-tap inline-flex items-center gap-1 font-mono text-[11px] font-bold uppercase tracking-wider text-accent"
           >
             Ver todo <ArrowRight className="h-3 w-3" />
-          </button>
+          </MagneticButton>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {identities.map((id) => (
             <IdentityTile key={id.id} identity={id} onOpen={() => nav("/identidades")} />
           ))}
@@ -227,20 +261,22 @@ function KpiTile({
   className?: string;
 }) {
   return (
-    <GlassCard className={cn("flex flex-col justify-between p-4", className)}>
-      <div className="flex items-start justify-between">
-        <span className={cn("flex h-9 w-9 items-center justify-center rounded-xl", iconWrap)}>{icon}</span>
-        {ring !== undefined && (
-          <EnergyRing value={ring} size={42} stroke={4} color={ringColor}>
-            <span className="text-[9px] font-bold">{ring}</span>
-          </EnergyRing>
-        )}
-      </div>
-      <div className="mt-3">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">{label}</p>
-        <p className="font-display text-2xl font-bold tracking-tight">{value}</p>
-      </div>
-    </GlassCard>
+    <TiltCard className={cn("rounded-[1.75rem]", className)} intensity={5}>
+      <GlassCard className="flex h-full flex-col justify-between p-4">
+        <div className="flex items-start justify-between">
+          <span className={cn("flex h-9 w-9 items-center justify-center rounded-xl", iconWrap)}>{icon}</span>
+          {ring !== undefined && (
+            <EnergyRing value={ring} size={42} stroke={4} color={ringColor}>
+              <span className="font-mono text-[9px] font-bold">{ring}</span>
+            </EnergyRing>
+          )}
+        </div>
+        <div className="mt-3">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground">{label}</p>
+          <p className="font-display text-3xl font-bold tracking-tight">{value}</p>
+        </div>
+      </GlassCard>
+    </TiltCard>
   );
 }
 
@@ -254,45 +290,55 @@ function IdentityTile({
   const initial = identity.name[0]?.toUpperCase() ?? "?";
   const isActive = identity.status === "active";
   return (
-    <GlassCard
-      className="ios-tap cursor-pointer p-4 hover:bg-card/70"
-      onClick={onOpen}
-      whileHover={{ y: -2 }}
-    >
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-2xl text-lg font-display font-bold text-background shadow-lg"
-            style={{ background: `linear-gradient(135deg, ${identity.color}, ${identity.color}cc)` }}
-          >
-            {initial}
+    <TiltCard intensity={6} className="rounded-[1.75rem]">
+      <GlassCard
+        data-cursor="view"
+        data-cursor-label="Abrir"
+        className="ios-tap cursor-pointer p-5 hover:bg-card/70"
+        onClick={onOpen}
+      >
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div
+              className="flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-display font-bold text-background shadow-lg"
+              style={{ background: `linear-gradient(135deg, ${identity.color}, ${identity.color}cc)` }}
+            >
+              {initial}
+            </div>
+            <span
+              className={cn(
+                "absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-background",
+                isActive ? "bg-primary" : "bg-muted",
+              )}
+            />
           </div>
-          <span
-            className={cn(
-              "absolute -bottom-1 -right-1 h-3.5 w-3.5 rounded-full border-2 border-background",
-              isActive ? "bg-primary" : "bg-muted",
-            )}
-          />
+          <div className="flex-1 min-w-0">
+            <h4 className="truncate font-serif text-lg italic">{identity.name}</h4>
+            <p className="truncate font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+              {identity.role}
+            </p>
+          </div>
+          <EnergyRing value={identity.energy} size={40} stroke={3} color={identity.color}>
+            <span className="font-mono text-[9px] font-bold">{identity.energy}</span>
+          </EnergyRing>
         </div>
-        <div className="flex-1 min-w-0">
-          <h4 className="truncate font-display text-sm font-bold">{identity.name}</h4>
-          <p className="truncate text-[11px] text-muted-foreground">{identity.role}</p>
+        <div className="mt-4 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <span className={cn("h-1.5 w-1.5 rounded-full", isActive ? "bg-primary" : "bg-muted-foreground/40")} />
+            <span
+              className={cn(
+                "font-mono text-[9px] font-bold uppercase tracking-[0.2em]",
+                isActive ? "text-primary" : "text-muted-foreground/60",
+              )}
+            >
+              {statusLabel[identity.status as keyof typeof statusLabel]}
+            </span>
+          </div>
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-muted-foreground/40">
+            #{identity.id.slice(0, 4)}
+          </span>
         </div>
-        <EnergyRing value={identity.energy} size={36} stroke={3} color={identity.color}>
-          <span className="text-[9px] font-bold">{identity.energy}</span>
-        </EnergyRing>
-      </div>
-      <div className="mt-3 flex items-center gap-1.5">
-        <span className={cn("h-1.5 w-1.5 rounded-full", isActive ? "bg-primary" : "bg-muted-foreground/40")} />
-        <span
-          className={cn(
-            "text-[9px] font-bold uppercase tracking-widest",
-            isActive ? "text-primary" : "text-muted-foreground/60",
-          )}
-        >
-          {statusLabel[identity.status as keyof typeof statusLabel]}
-        </span>
-      </div>
-    </GlassCard>
+      </GlassCard>
+    </TiltCard>
   );
 }
