@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { Check, Car } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ const COLOR_BG: Record<string, string> = {
 
 export function ModeSwitcher({ compact = false }: { compact?: boolean }) {
   const { mode, autoSuggest, setMode, setAutoSuggest } = useCurrentMode();
+  const nav = useNavigate();
   const current = getMode(mode);
   const Icon = current.icon;
 
