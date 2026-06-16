@@ -57,9 +57,10 @@ export default function Missions() {
       priority: form.priority as any,
       assigned_identity_id: form.assigned_identity_id || null,
       xp_reward: Number(form.xp_reward),
+      context: (form.context || null) as any,
     });
     setOpen(false);
-    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50 });
+    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "" });
     toast.success("Misión creada");
   };
 
