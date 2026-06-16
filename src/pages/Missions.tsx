@@ -15,6 +15,9 @@ import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 import { cn } from "@/lib/utils";
 import { priorityLabel, missionStatusLabel } from "@/lib/zeofyou";
 import { toast } from "sonner";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { ContextBadge } from "@/components/Mode/ContextBadge";
+import { getMode, type ModeKey } from "@/lib/modes";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
