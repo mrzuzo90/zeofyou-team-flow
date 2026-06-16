@@ -18,12 +18,21 @@ import { ContextBadge } from "@/components/Mode/ContextBadge";
 import { getMode } from "@/lib/modes";
 
 export default function Identities() {
-  const { data: identities = [] } = useIdentities();
+  const { data: allIdentities = [] } = useIdentities();
+  const { mode } = useCurrentMode();
   const updateStatus = useUpdateIdentityStatus();
+  const updateIdent = useUpdateIdentity();
   const createId = useCreateIdentity();
   const del = useDeleteIdentity();
   const [open, setOpen] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [form, setForm] = useState({ name: "", role: "", description: "", specialty: "", color: "emerald" });
+
+  const filterByMode = mode !== "none" && !showAll;
+  const identities = filterByMode
+    ? allIdentities.filter((i) => !i.context || i.context === mode)
+    : allIdentities;
+  const hiddenCount = allIdentities.length - identities.length;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,10 +44,20 @@ export default function Identities() {
 
   return (
     <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades">
-      <div className="mb-6 flex items-center justify-between">
-        <div className="flex gap-3 text-xs">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full bg-success/10 px-2.5 py-1 text-success">● {identities.filter(i => i.status === "active").length} activos</span>
           <span className="rounded-full bg-muted/40 px-2.5 py-1 text-muted-foreground">● {identities.filter(i => i.status === "resting").length} descansando</span>
+          {filterByMode && hiddenCount > 0 && (
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(true)}>
+              Modo {getMode(mode).label} · ver todas ({hiddenCount} ocultas)
+            </Button>
+          )}
+          {!filterByMode && mode !== "none" && (
+            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setShowAll(false)}>
+              Filtrar por modo {getMode(mode).label}
+            </Button>
+          )}
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
