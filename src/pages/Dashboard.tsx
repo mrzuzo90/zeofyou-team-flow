@@ -43,7 +43,7 @@ export default function Dashboard() {
   })();
 
   return (
-    <Layout title={`${greeting}, ${profile?.display_name ?? "tú"}`} subtitle="Así está hoy tu equipo">
+    <Layout title={`${greeting}, ${profile?.display_name ?? "tú"}`} subtitle={mode === "none" ? "Así está hoy tu equipo" : `Modo ${currentMode.label} · ${currentMode.description}`}>
       <div className="grid gap-5 lg:grid-cols-3">
         {/* HERO con misión principal */}
         <GlassCard glow="emerald" className="lg:col-span-2 overflow-hidden p-0">
