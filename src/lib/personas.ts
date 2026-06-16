@@ -212,3 +212,8 @@ export function personaCardClass(p: PersonaPreset): string {
 export function personaFontClass(p: PersonaPreset): string {
   return FONT_CLASS[p.font];
 }
+
+export function personaFontStyle(p: PersonaPreset): CSSProperties {
+  return { fontFamily: FONT_FAMILY[p.font] };
+}
+
