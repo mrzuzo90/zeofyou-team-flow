@@ -15,6 +15,8 @@ export type Identity = {
   status: "active" | "resting" | "paused";
   total_xp: number;
   context: "work" | "home" | "family" | "travel" | null;
+  persona: string | null;
+  preferences: Record<string, any> | null;
 };
 
 export const useIdentities = () => {
