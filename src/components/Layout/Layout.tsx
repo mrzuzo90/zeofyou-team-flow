@@ -33,14 +33,15 @@ export const Layout = ({ children, title, subtitle, seo }: LayoutProps) => {
   return (
     <SidebarProvider defaultOpen>
       {seo && <PageSeo {...seo} />}
-      <div className="flex min-h-screen w-full">
-        <div className="hidden lg:block">
+      <div className="relative flex min-h-screen w-full">
+        <div className="aurora-bg" aria-hidden="true" />
+        <div className="relative z-10 hidden lg:block">
           <AppSidebar />
         </div>
-        <div className="flex min-h-screen flex-1 flex-col">
+        <div className="relative z-10 flex min-h-screen flex-1 flex-col">
           <TopBar title={title} subtitle={subtitle} onOpenPalette={() => setPaletteOpen(true)} onOpenCoach={() => setCoachOpen(true)} />
-          <main className="flex-1 pb-24 lg:pb-8">
-            <div className="mx-auto w-full max-w-7xl px-4 py-6 lg:px-8">{children}</div>
+          <main className="flex-1 pb-32 lg:pb-8">
+            <div className="mx-auto w-full max-w-7xl px-4 py-4 lg:px-8 lg:py-6">{children}</div>
           </main>
           <BottomNav />
         </div>

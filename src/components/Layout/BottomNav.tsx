@@ -11,34 +11,48 @@ const items = [
 ];
 
 export const BottomNav = () => (
-  <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/80 backdrop-blur-xl lg:hidden">
-    <div className="safe-bottom mx-auto flex max-w-md items-end justify-around px-2 pt-2">
+  <nav
+    aria-label="Navegación principal"
+    className="fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 lg:hidden"
+  >
+    <div className="mx-auto flex max-w-md items-center justify-around rounded-[2.25rem] dock-glass px-2 py-2">
       {items.map((it) => (
         <NavLink
           key={it.to}
           to={it.to}
           end={it.end}
+          aria-label={it.label}
           className={({ isActive }) =>
             cn(
-              "relative flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-medium transition-all",
-              isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
-              it.center && "-translate-y-3",
+              "ios-tap relative flex flex-col items-center gap-0.5 text-[10px] font-semibold",
+              isActive ? "text-foreground" : "text-muted-foreground",
+              it.center && "-translate-y-5",
             )
           }
         >
           {({ isActive }) =>
             it.center ? (
               <>
-                <span className={cn("flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-emerald shadow-glow-emerald transition-transform", isActive && "scale-110")}>
-                  <it.icon className="h-6 w-6 text-primary-foreground" strokeWidth={2.4} />
+                <span
+                  className={cn(
+                    "ios-tap flex h-14 w-14 items-center justify-center rounded-full bg-gradient-aurora shadow-aurora ring-4 ring-background/80",
+                    isActive && "scale-105",
+                  )}
+                >
+                  <it.icon className="h-6 w-6 text-background" strokeWidth={2.6} />
                 </span>
-                <span className="mt-0.5">{it.label}</span>
+                <span className={cn("mt-0.5", isActive ? "text-accent" : "text-muted-foreground")}>{it.label}</span>
               </>
             ) : (
-              <>
+              <span
+                className={cn(
+                  "flex flex-col items-center gap-0.5 rounded-2xl px-2.5 py-1.5 transition-colors",
+                  isActive && "bg-accent/10 text-accent",
+                )}
+              >
                 <it.icon className={cn("h-5 w-5 transition-transform", isActive && "scale-110")} strokeWidth={2.2} />
                 <span>{it.label}</span>
-              </>
+              </span>
             )
           }
         </NavLink>
