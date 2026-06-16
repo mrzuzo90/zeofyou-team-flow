@@ -545,12 +545,12 @@
 
 @layer components {
   html[data-theme="light"] .glass-strong {
-    background: hsl(0 0% 100% / 0.78);
-    border-color: hsl(220 30% 50% / 0.12);
+    background: hsl(0 0% 100% / 0.92);
+    border-color: hsl(220 16% 80% / 0.6);
   }
   html[data-theme="light"] .dock-glass {
-    background: hsl(0 0% 100% / 0.78);
-    border: 1px solid hsl(220 30% 50% / 0.1);
+    background: hsl(0 0% 100% / 0.92);
+    border: 1px solid hsl(220 16% 80% / 0.6);
   }
   html[data-theme="light"] .aurora-bg::before {
     background: hsl(252 92% 70% / 0.28);
