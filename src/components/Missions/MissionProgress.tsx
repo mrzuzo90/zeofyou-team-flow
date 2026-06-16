@@ -50,7 +50,23 @@ export function MissionProgress({ mission, compact = false }: { mission: Mission
         <span className="font-semibold text-foreground">{value}%</span>
       </div>
 
-      <Progress value={value} className="h-2" />
+      <div className="relative h-2 overflow-hidden rounded-full bg-muted/40">
+        <div
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-aurora transition-[width] duration-700 ease-out"
+          style={{ width: `${value}%` }}
+        />
+        <div
+          className="absolute inset-y-0 left-0 rounded-full opacity-70 mix-blend-overlay"
+          style={{
+            width: `${value}%`,
+            background:
+              "linear-gradient(90deg, transparent 0%, hsl(0 0% 100% / 0.45) 50%, transparent 100%)",
+            backgroundSize: "200% 100%",
+            animation: "mission-shimmer 2.4s linear infinite",
+          }}
+        />
+      </div>
+      <style>{`@keyframes mission-shimmer { 0% { background-position: -100% 0; } 100% { background-position: 200% 0; } }`}</style>
 
       {!compact && (
         <div className="flex flex-wrap items-center gap-2 pt-1">
