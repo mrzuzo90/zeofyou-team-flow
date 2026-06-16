@@ -1,4 +1,5 @@
-import { Check } from "lucide-react";
+import { Check, Car } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,7 @@ const COLOR_BG: Record<string, string> = {
 
 export function ModeSwitcher({ compact = false }: { compact?: boolean }) {
   const { mode, autoSuggest, setMode, setAutoSuggest } = useCurrentMode();
+  const nav = useNavigate();
   const current = getMode(mode);
   const Icon = current.icon;
 
@@ -65,6 +67,10 @@ export function ModeSwitcher({ compact = false }: { compact?: boolean }) {
             </DropdownMenuItem>
           );
         })}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => nav("/manos-libres")} className="flex items-center gap-2 text-sm">
+          <Car className="h-3.5 w-3.5" /> Modo manos libres
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <div className="flex items-center justify-between gap-3 px-2 py-2">
           <div className="min-w-0">

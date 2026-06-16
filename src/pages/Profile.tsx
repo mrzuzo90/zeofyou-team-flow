@@ -13,6 +13,9 @@ import { LogOut, Trophy, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { xpProgress } from "@/lib/zeofyou";
 import { cn } from "@/lib/utils";
+import { ModeUsageBar } from "@/components/Mode/ModeUsageBar";
+import { Switch } from "@/components/ui/switch";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
 
 const RARITY: Record<string, string> = {
   common: "bg-muted/40 text-muted-foreground border-muted",
@@ -25,6 +28,7 @@ export default function Profile() {
   const { signOut, user } = useAuth();
   const { data: profile } = useProfile();
   const update = useUpdateProfile();
+  const { ritualEnabled, setRitualEnabled } = useCurrentMode();
   const [name, setName] = useState(profile?.display_name ?? "");
   const [pomodoro, setPomodoro] = useState(profile?.preferences?.pomodoroMinutes ?? 25);
   const [achievements, setAchievements] = useState<any[]>([]);
@@ -89,11 +93,27 @@ export default function Profile() {
               <Label>Duración Pomodoro: {pomodoro} min</Label>
               <Slider value={[pomodoro]} onValueChange={(v) => setPomodoro(v[0])} min={10} max={90} step={5} />
             </div>
+            <div className="space-y-2 rounded-lg border border-border p-3">
+              <div className="flex items-center justify-between">
+                <Label className="text-sm">Ritual de transición entre modos</Label>
+                <Switch checked={ritualEnabled} onCheckedChange={setRitualEnabled} />
+              </div>
+              <p className="text-xs text-muted-foreground">Respiración + intención al cambiar de modo (~45s)</p>
+              <div className="flex items-center justify-between pt-2">
+                <Label className="text-sm">Check-ins de energía</Label>
+                <Switch checked={(profile as any)?.energy_checkin_enabled ?? true} onCheckedChange={(v) => update.mutate({ energy_checkin_enabled: v } as any)} />
+              </div>
+              <p className="text-xs text-muted-foreground">2 veces al día, sin avasallar</p>
+            </div>
             <Button onClick={save} className="w-full bg-gradient-emerald text-primary-foreground">Guardar</Button>
             <Button variant="outline" onClick={signOut} className="w-full gap-2"><LogOut className="h-4 w-4" /> Cerrar sesión</Button>
           </div>
         </GlassCard>
       </div>
+
+      <section className="mt-8">
+        <ModeUsageBar />
+      </section>
 
       <section className="mt-8">
         <h2 className="mb-4 font-display text-lg font-bold">Logros</h2>

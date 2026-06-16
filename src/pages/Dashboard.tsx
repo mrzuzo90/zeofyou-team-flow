@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { statusLabel } from "@/lib/zeofyou";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { getMode } from "@/lib/modes";
+import { TwoMinWidget } from "@/components/Dashboard/TwoMinWidget";
 
 export default function Dashboard() {
   const nav = useNavigate();
@@ -120,6 +121,12 @@ export default function Dashboard() {
           </GlassCard>
         </motion.div>
       )}
+
+      {/* Acción de 2 minutos */}
+      <section className="mt-5">
+        <TwoMinWidget />
+      </section>
+
 
       {/* Equipo */}
       <section className="mt-8">

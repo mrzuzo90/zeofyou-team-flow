@@ -6,9 +6,11 @@ import { TopBar } from "./TopBar";
 import { PrivacyShield } from "@/components/UI/PrivacyShield";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { useModeSuggestion } from "@/hooks/useModeSuggestion";
+import { BrainDumpButton } from "@/components/BrainDump/BrainDumpButton";
+import { EnergyCheckInPrompt } from "@/components/Energy/EnergyCheckIn";
 
 export const Layout = ({ children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }) => {
-  useCurrentMode(); // aplica data-mode al html
+  useCurrentMode(); // aplica data-mode al html y registra cambios
   useModeSuggestion();
   return (
   <SidebarProvider defaultOpen>
@@ -24,6 +26,8 @@ export const Layout = ({ children, title, subtitle }: { children: ReactNode; tit
         <BottomNav />
       </div>
       <PrivacyShield />
+      <BrainDumpButton />
+      <EnergyCheckInPrompt />
     </div>
   </SidebarProvider>
   );

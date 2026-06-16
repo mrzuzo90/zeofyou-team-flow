@@ -43,19 +43,14 @@ export default function Insights() {
   const generateAI = async () => {
     setAiLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke("weekly-insights", {
-        body: {
-          last7,
-          balance: balance.map(b => ({ name: b.name, minutes: b.minutos })),
-          totalFocus,
-          totalMissions,
-          identities: identities.map(i => ({ name: i.name, status: i.status, energy: i.energy })),
-        },
-      });
+      const { data, error } = await supabase.functions.invoke("weekly-summary", { body: { force: true } });
       if (error) throw error;
-      setAiSummary(data?.summary ?? "Sin datos suficientes todavía.");
+      if ((data as any)?.error) throw new Error((data as any).error);
+      const sugg = Array.isArray(data?.suggestions) ? data.suggestions : [];
+      const full = [data?.summary, sugg.length ? "\n\nSugerencias:\n• " + sugg.join("\n• ") : ""].filter(Boolean).join("");
+      setAiSummary(full || "Sin datos suficientes todavía.");
     } catch (e: any) {
-      toast.error("No se pudo generar el resumen IA");
+      toast.error(e?.message?.includes("402") ? "Sin créditos de IA" : "No se pudo generar el resumen IA");
     } finally {
       setAiLoading(false);
     }
