@@ -12,6 +12,9 @@ import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 import { Sparkles, Loader2, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { FocusHeatmap } from "@/components/Insights/FocusHeatmap";
+import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
+import { TiltCard } from "@/components/Motion/TiltCard";
+import { MagneticButton } from "@/components/Motion/MagneticButton";
 
 export default function Insights() {
   const { data: sessions = [] } = useFocusSessions(200);
@@ -60,18 +63,27 @@ export default function Insights() {
   return (
     <Layout title="Insights" subtitle="Tu semana, tus patrones, tus áreas de mejora" seo={{ title: "Insights semanales | Zeofyou", description: "Patrones de energía, focus y misiones de tu semana en Zeofyou.", path: "/insights" }}>
       <div className="grid gap-4 sm:grid-cols-3">
-        <GlassCard className="p-5">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Focus acumulado</div>
-          <div className="mt-1 font-display text-3xl font-bold">{Math.floor(totalFocus / 60)}<span className="text-base font-normal text-muted-foreground">h </span>{totalFocus % 60}<span className="text-base font-normal text-muted-foreground">m</span></div>
-        </GlassCard>
-        <GlassCard className="p-5">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Sesiones</div>
-          <div className="mt-1 font-display text-3xl font-bold">{sessions.length}</div>
-        </GlassCard>
-        <GlassCard className="p-5">
-          <div className="text-xs uppercase tracking-wider text-muted-foreground">Misiones completadas</div>
-          <div className="mt-1 font-display text-3xl font-bold">{totalMissions}</div>
-        </GlassCard>
+        <TiltCard intensity={5} className="rounded-3xl">
+          <GlassCard className="p-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Focus acumulado</div>
+            <div className="mt-1 font-display text-3xl font-bold tabular-nums">
+              <AnimatedNumber value={Math.floor(totalFocus / 60)} /><span className="text-base font-normal text-muted-foreground">h </span>
+              <AnimatedNumber value={totalFocus % 60} /><span className="text-base font-normal text-muted-foreground">m</span>
+            </div>
+          </GlassCard>
+        </TiltCard>
+        <TiltCard intensity={5} className="rounded-3xl">
+          <GlassCard className="p-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Sesiones</div>
+            <div className="mt-1 font-display text-3xl font-bold tabular-nums"><AnimatedNumber value={sessions.length} /></div>
+          </GlassCard>
+        </TiltCard>
+        <TiltCard intensity={5} className="rounded-3xl">
+          <GlassCard className="p-5">
+            <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">Misiones completadas</div>
+            <div className="mt-1 font-display text-3xl font-bold tabular-nums"><AnimatedNumber value={totalMissions} /></div>
+          </GlassCard>
+        </TiltCard>
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -128,9 +140,14 @@ export default function Insights() {
             <Sparkles className="h-5 w-5 text-primary" />
             <h3 className="font-display font-bold">Resumen IA semanal</h3>
           </div>
-          <Button size="sm" onClick={generateAI} disabled={aiLoading} className="bg-gradient-emerald text-primary-foreground">
+          <MagneticButton
+            onClick={generateAI}
+            disabled={aiLoading}
+            cursorLabel="Generar"
+            className="ios-tap inline-flex h-9 items-center justify-center rounded-full bg-gradient-emerald px-4 text-sm font-semibold text-primary-foreground shadow-glow-emerald disabled:opacity-60"
+          >
             {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Generar"}
-          </Button>
+          </MagneticButton>
         </div>
         {aiSummary ? (
           <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-foreground">{aiSummary}</p>
