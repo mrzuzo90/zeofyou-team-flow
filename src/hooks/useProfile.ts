@@ -12,6 +12,8 @@ export type Profile = {
   last_active_at: string | null;
   preferences: { pomodoroMinutes: number; breakMinutes: number; theme: string };
   onboarding_completed: boolean;
+  current_mode: "work" | "home" | "family" | "travel" | "none";
+  mode_auto_suggest: boolean;
 };
 
 export const useProfile = () => {
