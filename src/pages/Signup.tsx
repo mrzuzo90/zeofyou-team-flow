@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
@@ -11,11 +11,15 @@ import { Loader2 } from "lucide-react";
 
 export default function Signup() {
   const nav = useNavigate();
-  const { signUp } = useAuth();
+  const { user, loading: authLoading, signUp } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!authLoading && user) nav("/", { replace: true });
+  }, [user, authLoading, nav]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,12 +28,23 @@ export default function Signup() {
     setLoading(false);
     if (error) return toast.error(error.message);
     toast.success("¡Bienvenido a Zeofyou!");
-    nav("/bienvenida");
+    nav("/bienvenida", { replace: true });
   };
 
   const google = async () => {
-    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (r.error) toast.error("Error con Google");
+    setLoading(true);
+    try {
+      const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+      if (r.error) {
+        toast.error(r.error.message || "Error con Google");
+        setLoading(false);
+        return;
+      }
+      if (r.redirected) return;
+      nav("/", { replace: true });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
