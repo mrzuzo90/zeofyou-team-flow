@@ -56,6 +56,17 @@ export const FONT_CLASS: Record<FontKey, string> = {
   cormorant: "font-[Cormorant_Garamond]",
 };
 
+export const FONT_FAMILY: Record<FontKey, string> = {
+  sora: '"Sora", system-ui, sans-serif',
+  playfair: '"Playfair Display", Georgia, serif',
+  jetbrains: '"JetBrains Mono", ui-monospace, monospace',
+  manrope: '"Manrope", system-ui, sans-serif',
+  "space-grotesk": '"Space Grotesk", system-ui, sans-serif',
+  "inter-tight": '"Inter Tight", system-ui, sans-serif',
+  "archivo-black": '"Archivo Black", Impact, sans-serif',
+  cormorant: '"Cormorant Garamond", Georgia, serif',
+};
+
 export const PERSONAS: Record<PersonaKey, PersonaPreset> = {
   strategist: {
     key: "strategist",
