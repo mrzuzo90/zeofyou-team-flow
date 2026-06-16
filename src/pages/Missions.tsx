@@ -17,6 +17,7 @@ import { priorityLabel, missionStatusLabel } from "@/lib/zeofyou";
 import { toast } from "sonner";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
 import { ContextBadge } from "@/components/Mode/ContextBadge";
+import { MissionProgress } from "@/components/Missions/MissionProgress";
 import { getMode, type ModeKey } from "@/lib/modes";
 
 const PRIORITY_COLOR: Record<string, string> = {
@@ -113,6 +114,11 @@ export default function Missions() {
             </div>
             <h3 className="font-display font-semibold leading-tight">{m.title}</h3>
             {m.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
+            {m.kind === "long_term" && (
+              <div className="mt-3">
+                <MissionProgress mission={m} />
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-4 flex items-center justify-between gap-2">
