@@ -41,6 +41,36 @@ export type Database = {
         }
         Relationships: []
       }
+      brain_dumps: {
+        Row: {
+          archived: boolean
+          content: string
+          context: string | null
+          created_at: string
+          id: string
+          kind: string
+          user_id: string
+        }
+        Insert: {
+          archived?: boolean
+          content: string
+          context?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          user_id: string
+        }
+        Update: {
+          archived?: boolean
+          content?: string
+          context?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_metrics: {
         Row: {
           avg_energy: number
@@ -81,6 +111,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      energy_checkins: {
+        Row: {
+          created_at: string
+          id: string
+          level: number
+          mode: string | null
+          mood: string | null
+          note: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          level: number
+          mode?: string | null
+          mood?: string | null
+          note?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          level?: number
+          mode?: string | null
+          mood?: string | null
+          note?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       focus_sessions: {
         Row: {
@@ -243,6 +303,33 @@ export type Database = {
           },
         ]
       }
+      mode_sessions: {
+        Row: {
+          created_at: string
+          ended_at: string | null
+          id: string
+          mode: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          mode: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          mode?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       onboarding_profiles: {
         Row: {
           ambitions: string[]
@@ -285,6 +372,7 @@ export type Database = {
           created_at: string
           current_mode: string
           display_name: string | null
+          energy_checkin_enabled: boolean
           id: string
           last_active_at: string | null
           level: number
@@ -292,6 +380,7 @@ export type Database = {
           onboarding_completed: boolean
           preferences: Json
           streak_days: number
+          transition_ritual_enabled: boolean
           updated_at: string
           xp: number
         }
@@ -300,6 +389,7 @@ export type Database = {
           created_at?: string
           current_mode?: string
           display_name?: string | null
+          energy_checkin_enabled?: boolean
           id: string
           last_active_at?: string | null
           level?: number
@@ -307,6 +397,7 @@ export type Database = {
           onboarding_completed?: boolean
           preferences?: Json
           streak_days?: number
+          transition_ritual_enabled?: boolean
           updated_at?: string
           xp?: number
         }
@@ -315,6 +406,7 @@ export type Database = {
           created_at?: string
           current_mode?: string
           display_name?: string | null
+          energy_checkin_enabled?: boolean
           id?: string
           last_active_at?: string | null
           level?: number
@@ -322,8 +414,39 @@ export type Database = {
           onboarding_completed?: boolean
           preferences?: Json
           streak_days?: number
+          transition_ritual_enabled?: boolean
           updated_at?: string
           xp?: number
+        }
+        Relationships: []
+      }
+      transition_notes: {
+        Row: {
+          bringing: string | null
+          created_at: string
+          from_mode: string | null
+          id: string
+          leaving: string | null
+          to_mode: string
+          user_id: string
+        }
+        Insert: {
+          bringing?: string | null
+          created_at?: string
+          from_mode?: string | null
+          id?: string
+          leaving?: string | null
+          to_mode: string
+          user_id: string
+        }
+        Update: {
+          bringing?: string | null
+          created_at?: string
+          from_mode?: string | null
+          id?: string
+          leaving?: string | null
+          to_mode?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -355,6 +478,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      weekly_summaries: {
+        Row: {
+          created_at: string
+          id: string
+          iso_week: string
+          metrics: Json
+          suggestions: Json
+          summary: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          iso_week: string
+          metrics?: Json
+          suggestions?: Json
+          summary: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          iso_week?: string
+          metrics?: Json
+          suggestions?: Json
+          summary?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
