@@ -219,6 +219,42 @@ export default function Missions() {
                 <input type="checkbox" checked={form.is_primary} onChange={(e) => setForm({ ...form, is_primary: e.target.checked })} className="h-4 w-4 rounded accent-primary" />
                 Marcar como misión principal
               </label>
+              <label className="flex items-center gap-2 text-sm border-t border-border/50 pt-3">
+                <input type="checkbox" checked={form.kind === "long_term"} onChange={(e) => setForm({ ...form, kind: e.target.checked ? "long_term" : "task" })} className="h-4 w-4 rounded accent-primary" />
+                Misión de largo plazo (con progreso)
+              </label>
+              {form.kind === "long_term" && (
+                <div className="space-y-3 rounded-lg bg-muted/30 p-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label>Horizonte</Label>
+                      <Select value={form.horizon} onValueChange={(v) => setForm({ ...form, horizon: v as any })}>
+                        <SelectTrigger><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="week">Semana</SelectItem>
+                          <SelectItem value="month">Mes</SelectItem>
+                          <SelectItem value="quarter">Trimestre</SelectItem>
+                          <SelectItem value="year">Año</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label>Horas objetivo (opcional)</Label>
+                      <Input type="number" min={0} step={0.5} placeholder="Ej. 40" value={form.target_hours} onChange={(e) => setForm({ ...form, target_hours: e.target.value })} />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label>Modo de progreso</Label>
+                    <Select value={form.progress_mode} onValueChange={(v) => setForm({ ...form, progress_mode: v as any })}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="manual">Manual (yo muevo la barra)</SelectItem>
+                        <SelectItem value="time" disabled={!form.target_hours}>Automático por tiempo dedicado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+              )}
               <Button type="submit" className="w-full bg-gradient-emerald text-primary-foreground">Crear misión</Button>
             </form>
           </DialogContent>
