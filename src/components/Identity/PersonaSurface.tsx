@@ -11,16 +11,12 @@ import {
 interface Props extends HTMLAttributes<HTMLDivElement> {
   identity?: IdentityLike | null;
   persona?: PersonaPreset;
-  /** Capa base. "glass" hereda glassmorphism del proyecto. */
+  /** "bare" (por defecto) deja que la persona aporte fondo/borde. "glass" añade glass-card debajo. */
   base?: "glass" | "bare";
 }
 
-/**
- * Envoltorio que aplica la "personalidad visual" de una identidad:
- * acento, gradiente, textura y borde según su arquetipo.
- */
 export const PersonaSurface = forwardRef<HTMLDivElement, Props>(
-  ({ identity, persona, base = "glass", className, style, children, ...rest }, ref) => {
+  ({ identity, persona, base = "bare", className, style, children, ...rest }, ref) => {
     const p = persona ?? resolvePersona(identity ?? null);
     return (
       <div
