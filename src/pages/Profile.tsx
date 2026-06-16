@@ -9,13 +9,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { LogOut, Trophy, Flame } from "lucide-react";
+import { LogOut, Trophy, Flame, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { xpProgress } from "@/lib/zeofyou";
 import { cn } from "@/lib/utils";
 import { ModeUsageBar } from "@/components/Mode/ModeUsageBar";
 import { Switch } from "@/components/ui/switch";
 import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { useTheme } from "@/hooks/useTheme";
+import { MODES } from "@/lib/modes";
 
 const RARITY: Record<string, string> = {
   common: "bg-muted/40 text-muted-foreground border-muted",
@@ -29,6 +31,7 @@ export default function Profile() {
   const { data: profile } = useProfile();
   const update = useUpdateProfile();
   const { ritualEnabled, setRitualEnabled } = useCurrentMode();
+  const { themeByMode, setThemeForMode } = useTheme();
   const [name, setName] = useState(profile?.display_name ?? "");
   const [pomodoro, setPomodoro] = useState(profile?.preferences?.pomodoroMinutes ?? 25);
   const [achievements, setAchievements] = useState<any[]>([]);
@@ -109,7 +112,71 @@ export default function Profile() {
             <Button variant="outline" onClick={signOut} className="w-full gap-2"><LogOut className="h-4 w-4" /> Cerrar sesión</Button>
           </div>
         </GlassCard>
+
+        <GlassCard className="p-6 lg:col-span-3">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <h3 className="font-display font-bold">Tema por modo</h3>
+              <p className="text-xs text-muted-foreground">
+                Cada contexto recuerda su tema. Trabajo en oscuro, familia en claro… tú decides.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {MODES.map((m) => {
+              const t = themeByMode[m.key] ?? "dark";
+              const Icon = m.icon;
+              return (
+                <div
+                  key={m.key}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-border/60 bg-card/50 p-3"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-muted/60 text-foreground/80">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold truncate">{m.label}</p>
+                      <p className="text-[11px] text-muted-foreground truncate">
+                        {t === "dark" ? "Oscuro" : "Claro"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="inline-flex rounded-full border border-border/60 bg-background/60 p-0.5">
+                    <button
+                      type="button"
+                      onClick={() => setThemeForMode(m.key, "light")}
+                      aria-label={`Tema claro para ${m.label}`}
+                      className={cn(
+                        "ios-tap inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+                        t === "light"
+                          ? "bg-gradient-aurora text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Sun className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setThemeForMode(m.key, "dark")}
+                      aria-label={`Tema oscuro para ${m.label}`}
+                      className={cn(
+                        "ios-tap inline-flex h-7 w-7 items-center justify-center rounded-full transition-colors",
+                        t === "dark"
+                          ? "bg-gradient-aurora text-primary-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground",
+                      )}
+                    >
+                      <Moon className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </GlassCard>
       </div>
+
 
       <section className="mt-8">
         <ModeUsageBar />
