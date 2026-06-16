@@ -92,6 +92,7 @@ export default function Missions() {
               <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold", PRIORITY_COLOR[m.priority])}>{priorityLabel[m.priority]}</span>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{missionStatusLabel[m.status]}</span>
               <span className="text-[10px] text-primary">+{m.xp_reward} XP</span>
+              <ContextBadge value={m.context} size="xs" onChange={(c) => update.mutate({ id: m.id, patch: { context: c as any } })} />
             </div>
             <h3 className="font-display font-semibold leading-tight">{m.title}</h3>
             {m.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
