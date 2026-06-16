@@ -3,7 +3,7 @@ import Layout from "@/components/Layout/Layout";
 import { GlassCard } from "@/components/UI/GlassCard";
 import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 import { EnergyRing } from "@/components/UI/EnergyRing";
-import { useIdentities, useUpdateIdentityStatus, useCreateIdentity, useDeleteIdentity } from "@/hooks/useIdentities";
+import { useIdentities, useUpdateIdentityStatus, useCreateIdentity, useDeleteIdentity, useUpdateIdentity } from "@/hooks/useIdentities";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Play, Pause, Moon, Trash2 } from "lucide-react";
 import { statusLabel } from "@/lib/zeofyou";
 import { toast } from "sonner";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { ContextBadge } from "@/components/Mode/ContextBadge";
+import { getMode } from "@/lib/modes";
 
 export default function Identities() {
   const { data: identities = [] } = useIdentities();
