@@ -29,6 +29,7 @@ import {
   PERSONAS,
   personaCSSVars,
   personaFontClass,
+  personaFontStyle,
   resolvePersona,
   type PersonaKey,
   type PersonaPreset,
@@ -71,7 +72,7 @@ function PersonaPickerCard({
           }}
         />
         <div className="min-w-0">
-          <div className={cn("text-sm font-semibold leading-tight", personaFontClass(preset))}>
+          <div className="text-sm font-semibold leading-tight" style={personaFontStyle(preset)}>
             {preset.label}
           </div>
           <div className="text-[10px] text-muted-foreground">{preset.tagline}</div>
@@ -240,7 +241,7 @@ export default function Identities() {
                   <div className="flex items-start gap-4">
                     <IdentityAvatar identity={id} name={id.name} status={id.status} size="lg" />
                     <div>
-                      <div className={cn("text-lg font-bold leading-tight", personaFontClass(preset))}>
+                      <div className="text-lg font-bold leading-tight" style={personaFontStyle(preset)}>
                         {id.name}
                       </div>
                       <div className="text-xs text-muted-foreground">{id.role}</div>

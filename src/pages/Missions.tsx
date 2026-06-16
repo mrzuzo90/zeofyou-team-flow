@@ -28,7 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { TiltCard } from "@/components/Motion/TiltCard";
 import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
-import { resolvePersona, personaCSSVars, personaFontClass } from "@/lib/personas";
+import { resolvePersona, personaCSSVars, personaFontStyle } from "@/lib/personas";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
@@ -193,12 +193,12 @@ export default function Missions() {
               <span className="text-[10px] text-primary">+<AnimatedNumber value={m.xp_reward} /> XP</span>
               <ContextBadge value={m.context} size="xs" onChange={(c) => update.mutate({ id: m.id, patch: { context: c as any } })} />
               {preset && ident && (
-                <span className={cn("text-[10px]", personaFontClass(preset))} style={{ color: `hsl(${preset.accent})` }}>
+                <span className="text-[10px]" style={{ ...personaFontStyle(preset), color: `hsl(${preset.accent})` }}>
                   · {ident.name}
                 </span>
               )}
             </div>
-            <h3 className={cn("font-semibold leading-tight", preset ? personaFontClass(preset) : "font-display")}>{m.title}</h3>
+            <h3 className={cn("font-semibold leading-tight", !preset && "font-display")} style={preset ? personaFontStyle(preset) : undefined}>{m.title}</h3>
             {m.description && <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{m.description}</p>}
             {m.kind === "long_term" && (
               <div className="mt-3">
