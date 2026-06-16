@@ -1,177 +1,83 @@
+import Layout from "@/components/Layout/Layout";
+import { GlassCard } from "@/components/UI/GlassCard";
+import { useIdentities } from "@/hooks/useIdentities";
+import { useMissions } from "@/hooks/useMissions";
+import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
 
-import React, { useState } from 'react';
-import Header from '../components/Layout/Header';
-import { Textarea } from '../components/ui/textarea';
-import { Button } from '../components/ui/button';
-import { Clock, Users, Briefcase, PenTool, CheckCircle, Sun, Moon } from 'lucide-react';
+const DAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+const BLOCKS = ["Mañana", "Tarde", "Noche"];
 
-const Planning = () => {
-  const [morningThoughts, setMorningThoughts] = useState('');
-  const [priorities, setPriorities] = useState('');
-  const [eveningReflection, setEveningReflection] = useState('');
-  const [teamReflection, setTeamReflection] = useState('');
+export default function Planning() {
+  const { data: identities = [] } = useIdentities();
+  const { data: missions = [] } = useMissions();
 
-  const dailySchedule = [
-    { icon: Users, title: 'Standup Matutino', time: '9:00 AM', completed: true },
-    { icon: Briefcase, title: 'Inicio de Proyecto', time: '10:00 AM', completed: true },
-    { icon: PenTool, title: 'Revisión de Diseño', time: '11:00 AM', completed: false },
-    { icon: Clock, title: 'Planificación Semanal', time: '2:00 PM', completed: false },
-    { icon: Users, title: 'Reunión de Equipo', time: '4:00 PM', completed: false }
-  ];
-
-  const handleSave = () => {
-    const planningData = {
-      date: new Date().toISOString(),
-      morningThoughts,
-      priorities,
-      eveningReflection,
-      teamReflection
-    };
-    
-    localStorage.setItem('zeofyou_planning', JSON.stringify(planningData));
-    console.log('Planificación guardada:', planningData);
-  };
+  // Asignación demo: rotamos identidades activas por bloques
+  const active = identities.filter((i) => i.status === "active");
+  const cell = (d: number, b: number) => active[(d + b) % Math.max(1, active.length)];
 
   return (
-    <div className="min-h-screen bg-gray-900 pb-20">
-      <Header title="Planificación y Reflexión" />
-      
-      <main className="max-w-md mx-auto px-4 py-6 space-y-8">
-        {/* Briefing Diario */}
-        <section>
-          <div className="flex items-center mb-4">
-            <Sun className="w-5 h-5 text-yellow-400 mr-2" />
-            <h2 className="text-lg font-semibold text-white">Briefing Diario</h2>
-          </div>
-          
-          <div className="space-y-3">
-            {dailySchedule.map((item, index) => (
-              <div key={index} className="flex items-center space-x-4 p-3 bg-gray-800 rounded-lg border border-gray-700">
-                <div className={`p-2 rounded-lg ${item.completed ? 'bg-green-500/20' : 'bg-gray-700'}`}>
-                  <item.icon className={`w-5 h-5 ${item.completed ? 'text-green-400' : 'text-gray-400'}`} />
-                </div>
-                <div className="flex-1">
-                  <h3 className={`font-medium ${item.completed ? 'text-green-400 line-through' : 'text-white'}`}>
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-400 text-sm">{item.time}</p>
-                </div>
-                {item.completed && (
-                  <CheckCircle className="w-5 h-5 text-green-400" />
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Planificación Matutina */}
-        <section>
-          <div className="flex items-center mb-4">
-            <Sun className="w-5 h-5 text-orange-400 mr-2" />
-            <h2 className="text-lg font-semibold text-white">Planificación Matutina</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                ¿Qué tienes en mente hoy?
-              </label>
-              <Textarea
-                placeholder="Comparte tus pensamientos, ideas o preocupaciones para el día..."
-                value={morningThoughts}
-                onChange={(e) => setMorningThoughts(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                ¿Cuáles son tus prioridades para hoy?
-              </label>
-              <Textarea
-                placeholder="Lista las 3 cosas más importantes que quieres lograr hoy..."
-                value={priorities}
-                onChange={(e) => setPriorities(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Revisión Vespertina */}
-        <section>
-          <div className="flex items-center mb-4">
-            <Moon className="w-5 h-5 text-purple-400 mr-2" />
-            <h2 className="text-lg font-semibold text-white">Revisión Vespertina</h2>
-          </div>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                ¿Cómo fue tu día?
-              </label>
-              <Textarea
-                placeholder="Reflexiona sobre los logros, desafíos y aprendizajes del día..."
-                value={eveningReflection}
-                onChange={(e) => setEveningReflection(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Reflexión sobre tu equipo interno
-              </label>
-              <Textarea
-                placeholder="¿Cómo interactuaron tus diferentes identidades hoy? ¿Qué funcionó bien?"
-                value={teamReflection}
-                onChange={(e) => setTeamReflection(e.target.value)}
-                rows={3}
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Métricas del Día */}
-        <section>
-          <h2 className="text-lg font-semibold text-white mb-4">Métricas del Día</h2>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-              <div className="text-2xl font-bold text-green-400">4/5</div>
-              <div className="text-gray-400 text-sm">Tareas Completadas</div>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-              <div className="text-2xl font-bold text-blue-400">85%</div>
-              <div className="text-gray-400 text-sm">Energía</div>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-              <div className="text-2xl font-bold text-purple-400">3</div>
-              <div className="text-gray-400 text-sm">Sesiones Focus</div>
-            </div>
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 text-center">
-              <div className="text-2xl font-bold text-yellow-400">92%</div>
-              <div className="text-gray-400 text-sm">Bienestar</div>
-            </div>
-          </div>
-        </section>
-
-        {/* Guardar */}
-        <div className="pt-4">
-          <Button
-            onClick={handleSave}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-          >
-            Guardar Reflexiones
-          </Button>
+    <Layout title="Agenda semanal" subtitle="Equilibra qué identidad lleva cada bloque del día">
+      <GlassCard className="p-4 md:p-6 overflow-x-auto">
+        <div className="grid min-w-[640px] grid-cols-8 gap-2">
+          <div />
+          {DAYS.map((d) => (
+            <div key={d} className="text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground py-2">{d}</div>
+          ))}
+          {BLOCKS.map((block, bi) => (
+            <>
+              <div key={block} className="flex items-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">{block}</div>
+              {DAYS.map((_, di) => {
+                const id = cell(di, bi);
+                return (
+                  <div key={`${bi}-${di}`} className="aspect-square rounded-xl border border-border bg-card/40 p-2 transition-all hover:border-primary/40 hover:bg-card">
+                    {id && (
+                      <div className="flex h-full flex-col items-center justify-center gap-1">
+                        <IdentityAvatar name={id.name} color={id.color} size="sm" />
+                        <span className="text-[9px] font-medium text-center leading-tight">{id.name.replace("El ", "")}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </>
+          ))}
         </div>
-      </main>
-    </div>
-  );
-};
+      </GlassCard>
 
-export default Planning;
+      <GlassCard className="mt-5 p-5">
+        <h3 className="mb-4 font-display font-bold">Equilibrio de la semana</h3>
+        <div className="space-y-3">
+          {identities.map((i) => {
+            const count = Array.from({ length: 21 }).filter((_, idx) => active[idx % Math.max(1, active.length)]?.id === i.id).length;
+            const pct = Math.round((count / 21) * 100);
+            return (
+              <div key={i.id}>
+                <div className="mb-1 flex items-center justify-between text-sm">
+                  <span className="font-medium">{i.name}</span>
+                  <span className="text-xs text-muted-foreground">{pct}%</span>
+                </div>
+                <div className="h-2 overflow-hidden rounded-full bg-muted/40">
+                  <div className="h-full rounded-full bg-gradient-emerald transition-all" style={{ width: `${pct}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </GlassCard>
+
+      {missions.length > 0 && (
+        <GlassCard className="mt-5 p-5">
+          <h3 className="mb-3 font-display font-bold">Misiones programadas</h3>
+          <ul className="space-y-2">
+            {missions.filter(m => m.status !== "completed").slice(0, 6).map((m) => (
+              <li key={m.id} className="flex items-center justify-between rounded-xl border border-border bg-card/30 px-4 py-3">
+                <span className="font-medium">{m.is_primary ? "★ " : ""}{m.title}</span>
+                <span className="text-xs text-muted-foreground">{m.due_date ?? "sin fecha"}</span>
+              </li>
+            ))}
+          </ul>
+        </GlassCard>
+      )}
+    </Layout>
+  );
+}

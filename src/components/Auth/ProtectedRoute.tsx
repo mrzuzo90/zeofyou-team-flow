@@ -1,20 +1,17 @@
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { useApp } from '../../contexts/AppContext';
-
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated } = useApp();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
+export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+  const { user, loading } = useAuth();
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+      </div>
+    );
   }
-
-  return <>{children}</>;
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
 };
 
 export default ProtectedRoute;

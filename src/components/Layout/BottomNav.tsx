@@ -1,38 +1,48 @@
+import { NavLink } from "react-router-dom";
+import { Home, Users, Timer, Target, BarChart3 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { Home, Users, BarChart3, Settings } from 'lucide-react';
+const items = [
+  { to: "/", icon: Home, label: "Inicio", end: true },
+  { to: "/identidades", icon: Users, label: "Equipo" },
+  { to: "/enfoque", icon: Timer, label: "Focus", center: true },
+  { to: "/proyectos", icon: Target, label: "Misiones" },
+  { to: "/insights", icon: BarChart3, label: "Insights" },
+];
 
-const BottomNav = () => {
-  const navItems = [
-    { icon: Home, label: 'Inicio', path: '/' },
-    { icon: Users, label: 'Equipo', path: '/identidades' },
-    { icon: BarChart3, label: 'Insights', path: '/insights' },
-    { icon: Settings, label: 'Perfil', path: '/perfil' }
-  ];
-
-  return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 border-t border-gray-700 px-4 py-2 z-50 lg:hidden">
-      <div className="flex justify-around items-center max-w-md mx-auto">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex flex-col items-center p-2 rounded-lg transition-all duration-200 ${
-                isActive
-                  ? 'text-blue-400 bg-blue-400/10'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
-              }`
-            }
-          >
-            <item.icon className="w-6 h-6 mb-1" />
-            <span className="text-xs font-medium">{item.label}</span>
-          </NavLink>
-        ))}
-      </div>
-    </nav>
-  );
-};
-
-export default BottomNav;
+export const BottomNav = () => (
+  <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-background/80 backdrop-blur-xl lg:hidden">
+    <div className="safe-bottom mx-auto flex max-w-md items-end justify-around px-2 pt-2">
+      {items.map((it) => (
+        <NavLink
+          key={it.to}
+          to={it.to}
+          end={it.end}
+          className={({ isActive }) =>
+            cn(
+              "relative flex flex-col items-center gap-0.5 rounded-xl px-3 py-1.5 text-[10px] font-medium transition-all",
+              isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
+              it.center && "-translate-y-3",
+            )
+          }
+        >
+          {({ isActive }) =>
+            it.center ? (
+              <>
+                <span className={cn("flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-emerald shadow-glow-emerald transition-transform", isActive && "scale-110")}>
+                  <it.icon className="h-6 w-6 text-primary-foreground" strokeWidth={2.4} />
+                </span>
+                <span className="mt-0.5">{it.label}</span>
+              </>
+            ) : (
+              <>
+                <it.icon className={cn("h-5 w-5 transition-transform", isActive && "scale-110")} strokeWidth={2.2} />
+                <span>{it.label}</span>
+              </>
+            )
+          }
+        </NavLink>
+      ))}
+    </div>
+  </nav>
+);

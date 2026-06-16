@@ -1,117 +1,111 @@
+import { useState } from "react";
+import Layout from "@/components/Layout/Layout";
+import { GlassCard } from "@/components/UI/GlassCard";
+import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
+import { EnergyRing } from "@/components/UI/EnergyRing";
+import { useIdentities, useUpdateIdentityStatus, useCreateIdentity, useDeleteIdentity } from "@/hooks/useIdentities";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Plus, Play, Pause, Moon, Trash2 } from "lucide-react";
+import { statusLabel } from "@/lib/zeofyou";
+import { toast } from "sonner";
 
-import React from 'react';
-import Header from '../components/Layout/Header';
-import IdentityCard from '../components/Identity/IdentityCard';
-import { useApp } from '../contexts/AppContext';
-import { Plus, Users } from 'lucide-react';
-import { useIsMobile } from '../hooks/use-mobile';
-import Layout from '../components/Layout/Layout';
-import Sidebar from '../components/Layout/Sidebar';
+export default function Identities() {
+  const { data: identities = [] } = useIdentities();
+  const updateStatus = useUpdateIdentityStatus();
+  const createId = useCreateIdentity();
+  const del = useDeleteIdentity();
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ name: "", role: "", description: "", specialty: "", color: "emerald" });
 
-const Identities = () => {
-  const { identities } = useApp();
-  const isMobile = useIsMobile();
-
-  const activeIdentities = identities.filter(identity => identity.status === 'activo');
-  const restingIdentities = identities.filter(identity => identity.status !== 'activo');
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await createId.mutateAsync(form);
+    setOpen(false);
+    setForm({ name: "", role: "", description: "", specialty: "", color: "emerald" });
+    toast.success("Identidad incorporada al equipo");
+  };
 
   return (
-    <>
-      {!isMobile && <Sidebar />}
-      <div className="flex min-h-screen bg-gray-900">
-        {!isMobile && <div className="w-64" />} {/* Spacer for sidebar */}
-        <div className="flex-1">
-          <Header title="Gestión del Equipo" />
-          
-          <main className={`px-4 py-6 ${isMobile ? 'max-w-md mx-auto' : 'mx-6'}`}>
-            {/* Introducción */}
-            <section className="mb-8">
-              <div className="bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-lg p-4 border border-blue-500/30 mb-6">
-                <div className="flex items-center mb-2">
-                  <Users className="w-6 h-6 text-blue-400 mr-2" />
-                  <h2 className="text-lg font-semibold text-white">Tu Equipo Mental</h2>
-                </div>
-                <p className="text-gray-300 text-sm">
-                  Cada identidad representa una faceta de tu personalidad. Gestiona tu equipo interno como un verdadero líder.
-                </p>
+    <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades">
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex gap-3 text-xs">
+          <span className="rounded-full bg-success/10 px-2.5 py-1 text-success">● {identities.filter(i => i.status === "active").length} activos</span>
+          <span className="rounded-full bg-muted/40 px-2.5 py-1 text-muted-foreground">● {identities.filter(i => i.status === "resting").length} descansando</span>
+        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2 bg-gradient-emerald text-primary-foreground"><Plus className="h-4 w-4" /> Nueva identidad</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Incorpora una identidad al equipo</DialogTitle></DialogHeader>
+            <form onSubmit={submit} className="space-y-4">
+              <div className="space-y-1.5"><Label>Nombre</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="El Negociador" /></div>
+              <div className="space-y-1.5"><Label>Rol</Label><Input required value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })} placeholder="Mediador de conflictos" /></div>
+              <div className="space-y-1.5"><Label>Especialidad</Label><Input value={form.specialty} onChange={(e) => setForm({ ...form, specialty: e.target.value })} placeholder="Comunicación" /></div>
+              <div className="space-y-1.5"><Label>Descripción</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={3} /></div>
+              <div className="space-y-1.5">
+                <Label>Color</Label>
+                <Select value={form.color} onValueChange={(v) => setForm({ ...form, color: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="emerald">Esmeralda</SelectItem>
+                    <SelectItem value="violet">Violeta</SelectItem>
+                    <SelectItem value="sky">Azul</SelectItem>
+                    <SelectItem value="amber">Ámbar</SelectItem>
+                    <SelectItem value="rose">Rosa</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </section>
+              <Button type="submit" className="w-full bg-gradient-emerald text-primary-foreground">Incorporar</Button>
+            </form>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-            {/* Métricas del Equipo */}
-            <section className="mb-8">
-              <div className={`grid ${isMobile ? 'grid-cols-3' : 'grid-cols-4'} gap-4`}>
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 text-center">
-                  <div className="text-2xl font-bold text-green-400">{activeIdentities.length}</div>
-                  <div className="text-gray-400 text-xs">Activos</div>
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {identities.map((id) => (
+          <GlassCard key={id.id} className="p-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-start gap-4">
+                <IdentityAvatar name={id.name} color={id.color} status={id.status} size="lg" />
+                <div>
+                  <div className="font-display text-lg font-bold leading-tight">{id.name}</div>
+                  <div className="text-xs text-muted-foreground">{id.role}</div>
+                  {id.specialty && <div className="mt-1 inline-block rounded-full bg-muted/40 px-2 py-0.5 text-[10px] uppercase tracking-wider text-muted-foreground">{id.specialty}</div>}
                 </div>
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 text-center">
-                  <div className="text-2xl font-bold text-yellow-400">{restingIdentities.length}</div>
-                  <div className="text-gray-400 text-xs">Descansando</div>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 text-center">
-                  <div className="text-2xl font-bold text-blue-400">92%</div>
-                  <div className="text-gray-400 text-xs">Armonía</div>
-                </div>
-                {!isMobile && (
-                  <div className="bg-gray-800 rounded-lg p-3 border border-gray-700 text-center">
-                    <div className="text-2xl font-bold text-purple-400">7</div>
-                    <div className="text-gray-400 text-xs">Total</div>
-                  </div>
-                )}
               </div>
-            </section>
-
-            <div className={`${!isMobile && 'grid grid-cols-2 gap-8'}`}>
-              {/* Identidades Activas */}
-              <section className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-white">Identidades Activas</h2>
-                  <span className="bg-green-500/20 text-green-400 px-2 py-1 rounded text-sm">
-                    {activeIdentities.length} en línea
-                  </span>
-                </div>
-                
-                {activeIdentities.length > 0 ? (
-                  <div className="space-y-4">
-                    {activeIdentities.map((identity) => (
-                      <IdentityCard key={identity.id} identity={identity} />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 text-center">
-                    <Users className="w-12 h-12 text-gray-500 mx-auto mb-3" />
-                    <p className="text-gray-400">No hay identidades activas</p>
-                    <p className="text-gray-500 text-sm">Activa una identidad para comenzar</p>
-                  </div>
-                )}
-              </section>
-
-              {/* Identidades en Descanso */}
-              {restingIdentities.length > 0 && (
-                <section className="mb-8">
-                  <h2 className="text-lg font-semibold text-white mb-4">En Descanso</h2>
-                  <div className="space-y-4">
-                    {restingIdentities.map((identity) => (
-                      <IdentityCard key={identity.id} identity={identity} />
-                    ))}
-                  </div>
-                </section>
-              )}
+              <EnergyRing value={id.energy} size={44} color={id.color}>
+                <span className="text-[10px] font-bold">{id.energy}</span>
+              </EnergyRing>
             </div>
 
-            {/* Crear Nueva Identidad */}
-            <section className={`${!isMobile && 'max-w-md mx-auto'}`}>
-              <button className="w-full bg-gray-800 hover:bg-gray-700 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg p-6 transition-all duration-200 group">
-                <Plus className="w-8 h-8 text-gray-500 group-hover:text-gray-400 mx-auto mb-2" />
-                <p className="text-gray-500 group-hover:text-gray-400 font-medium">Crear Nueva Identidad</p>
-                <p className="text-gray-600 text-sm">Añade una nueva faceta a tu equipo</p>
-              </button>
-            </section>
-          </main>
-        </div>
-      </div>
-    </>
-  );
-};
+            {id.description && <p className="mt-4 text-sm text-muted-foreground line-clamp-3">{id.description}</p>}
 
-export default Identities;
+            <div className="mt-5 flex items-center justify-between">
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{statusLabel[id.status]}</span>
+              <div className="flex gap-1">
+                <Button size="icon" variant={id.status === "active" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "active" })} title="Activar">
+                  <Play className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="icon" variant={id.status === "resting" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "resting" })} title="Descansar">
+                  <Moon className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="icon" variant={id.status === "paused" ? "default" : "ghost"} className="h-8 w-8" onClick={() => updateStatus.mutate({ id: id.id, status: "paused" })} title="Pausar">
+                  <Pause className="h-3.5 w-3.5" />
+                </Button>
+                <Button size="icon" variant="ghost" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => del.mutate(id.id)} title="Eliminar">
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+            </div>
+          </GlassCard>
+        ))}
+      </div>
+    </Layout>
+  );
+}

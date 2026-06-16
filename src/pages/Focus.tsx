@@ -1,238 +1,154 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import Layout from "@/components/Layout/Layout";
+import { GlassCard } from "@/components/UI/GlassCard";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useIdentities } from "@/hooks/useIdentities";
+import { useMissions } from "@/hooks/useMissions";
+import { useProfile } from "@/hooks/useProfile";
+import { useLogFocusSession } from "@/hooks/useFocusSessions";
+import { useAddXp } from "@/hooks/useProfile";
+import { usePrivacy } from "@/contexts/PrivacyContext";
+import { IdentityAvatar } from "@/components/UI/IdentityAvatar";
+import { Play, Pause, RotateCcw, EyeOff } from "lucide-react";
+import { toast } from "sonner";
 
-import React, { useState } from 'react';
-import Header from '../components/Layout/Header';
-import CircularTimer from '../components/Focus/CircularTimer';
-import { Button } from '../components/ui/button';
-import { useApp } from '../contexts/AppContext';
-import { useFocusTimer } from '../hooks/useFocusTimer';
-import { Play, Pause, Square, Coffee, Target } from 'lucide-react';
+export default function Focus() {
+  const { data: identities = [] } = useIdentities();
+  const { data: missions = [] } = useMissions();
+  const { data: profile } = useProfile();
+  const logSession = useLogFocusSession();
+  const addXp = useAddXp();
+  const { enable } = usePrivacy();
 
-const Focus = () => {
-  const { identities, addFocusSession } = useApp();
-  const [selectedTask, setSelectedTask] = useState('');
-  const [selectedIdentity, setSelectedIdentity] = useState('');
-  const [sessionStarted, setSessionStarted] = useState(false);
-  
-  const {
-    timeLeft,
-    isActive,
-    isPaused,
-    duration,
-    startTimer,
-    pauseTimer,
-    resumeTimer,
-    stopTimer,
-    resetTimer,
-    formatTime,
-    progress
-  } = useFocusTimer(25);
+  const primary = missions.find((m) => m.is_primary && m.status !== "completed");
+  const [identityId, setIdentityId] = useState<string>("");
+  const [missionId, setMissionId] = useState<string>(primary?.id ?? "");
+  const [duration, setDuration] = useState<number>(profile?.preferences?.pomodoroMinutes ?? 25);
+  const [secondsLeft, setSecondsLeft] = useState(duration * 60);
+  const [running, setRunning] = useState(false);
+  const ref = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const taskTypes = [
-    'Trabajo Creativo',
-    'Planificación Estratégica',
-    'Tareas Administrativas',
-    'Desarrollo Personal',
-    'Resolución de Problemas',
-    'Comunicación',
-    'Aprendizaje'
-  ];
+  useEffect(() => {
+    setSecondsLeft(duration * 60);
+  }, [duration]);
 
-  const activeIdentities = identities.filter(identity => identity.status === 'activo');
+  useEffect(() => {
+    if (!identityId && identities.length) setIdentityId(identities.find((i) => i.status === "active")?.id ?? identities[0].id);
+  }, [identities, identityId]);
 
-  const handleStartSession = () => {
-    if (selectedTask && selectedIdentity) {
-      setSessionStarted(true);
-      startTimer();
+  useEffect(() => {
+    if (running) {
+      ref.current = setInterval(() => {
+        setSecondsLeft((s) => {
+          if (s <= 1) {
+            clearInterval(ref.current!);
+            setRunning(false);
+            void finish();
+            return 0;
+          }
+          return s - 1;
+        });
+      }, 1000);
     }
+    return () => { if (ref.current) clearInterval(ref.current); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [running]);
+
+  const finish = async () => {
+    await logSession.mutateAsync({ identity_id: identityId || null, mission_id: missionId || null, duration_minutes: duration });
+    const xp = duration * 3;
+    await addXp.mutateAsync(xp);
+    toast.success(`¡Sesión completada! +${xp} XP`);
+    setSecondsLeft(duration * 60);
   };
 
-  const handleStopSession = () => {
-    const sessionData = {
-      task: selectedTask,
-      identity: selectedIdentity,
-      duration: duration,
-      completed: timeLeft === 0,
-      date: new Date().toISOString()
-    };
-    
-    addFocusSession(sessionData);
-    setSessionStarted(false);
-    stopTimer();
-    setSelectedTask('');
-    setSelectedIdentity('');
-  };
+  const reset = () => { setRunning(false); setSecondsLeft(duration * 60); };
 
-  const handleTakeBreak = () => {
-    pauseTimer();
-    // Aquí podrías iniciar un timer de descanso
-  };
+  const mm = Math.floor(secondsLeft / 60).toString().padStart(2, "0");
+  const ss = (secondsLeft % 60).toString().padStart(2, "0");
+  const totalSecs = duration * 60;
+  const progress = ((totalSecs - secondsLeft) / totalSecs) * 100;
 
-  if (!sessionStarted) {
-    return (
-      <div className="min-h-screen bg-gray-900 pb-20">
-        <Header title="Sesión de Enfoque" />
-        
-        <main className="max-w-md mx-auto px-4 py-6">
-          {/* Puntuación de Productividad */}
-          <div className="bg-gradient-to-r from-blue-500/20 to-green-500/20 rounded-lg p-6 border border-blue-500/30 mb-8">
-            <div className="text-center">
-              <Target className="w-12 h-12 text-blue-400 mx-auto mb-3" />
-              <div className="text-3xl font-bold text-white mb-2">8.2</div>
-              <div className="text-blue-400 font-medium">Puntuación de Enfoque</div>
-              <div className="text-gray-400 text-sm">Basado en sesiones anteriores</div>
-            </div>
-          </div>
-
-          {/* Configuración de Sesión */}
-          <div className="space-y-6">
-            <div>
-              <label className="block text-white font-medium mb-3">Tipo de Tarea</label>
-              <div className="grid grid-cols-1 gap-2">
-                {taskTypes.map((task) => (
-                  <button
-                    key={task}
-                    onClick={() => setSelectedTask(task)}
-                    className={`p-3 rounded-lg border transition-all duration-200 text-left ${
-                      selectedTask === task
-                        ? 'bg-blue-500/20 border-blue-500 text-blue-400'
-                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
-                    }`}
-                  >
-                    {task}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-white font-medium mb-3">Identidad Activa</label>
-              <div className="space-y-2">
-                {activeIdentities.map((identity) => (
-                  <button
-                    key={identity.id}
-                    onClick={() => setSelectedIdentity(identity.name)}
-                    className={`w-full p-3 rounded-lg border transition-all duration-200 flex items-center ${
-                      selectedIdentity === identity.name
-                        ? 'bg-blue-500/20 border-blue-500 text-blue-400'
-                        : 'bg-gray-800 border-gray-700 text-gray-300 hover:border-gray-600'
-                    }`}
-                  >
-                    <div className="w-8 h-8 bg-gray-700 rounded-full mr-3 flex items-center justify-center">
-                      <span className="text-sm">{identity.name.charAt(3)}</span>
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium">{identity.name}</div>
-                      <div className="text-sm text-gray-400">{identity.role}</div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <Button
-                disabled={!selectedTask || !selectedIdentity}
-                onClick={handleStartSession}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg"
-              >
-                <Play className="w-5 h-5 mr-2" />
-                Iniciar Sesión de 25 Minutos
-              </Button>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
+  const activeIdentity = useMemo(() => identities.find((i) => i.id === identityId), [identities, identityId]);
 
   return (
-    <div className="min-h-screen bg-gray-900 pb-20">
-      <Header title="Sesión de Enfoque Activa" />
-      
-      <main className="max-w-md mx-auto px-4 py-6">
-        {/* Timer Principal */}
-        <div className="text-center mb-8">
-          <CircularTimer
-            timeLeft={timeLeft}
-            duration={duration}
-            progress={progress}
-            formatTime={formatTime}
-          />
-        </div>
-
-        {/* Información de la Sesión */}
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 mb-8">
-          <div className="flex items-center mb-3">
-            <div className="w-8 h-8 bg-gray-700 rounded-full mr-3 flex items-center justify-center">
-              <span className="text-sm">{selectedIdentity.charAt(3)}</span>
+    <Layout title="Focus" subtitle="Una identidad, una misión, un bloque de tiempo">
+      <div className="mx-auto max-w-2xl">
+        <GlassCard glow="emerald" className="p-6 md:p-10">
+          {/* Selectores */}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div>
+              <label className="mb-1.5 block text-xs uppercase tracking-wider text-muted-foreground">Identidad activa</label>
+              <Select value={identityId} onValueChange={setIdentityId}>
+                <SelectTrigger><SelectValue placeholder="Elige identidad" /></SelectTrigger>
+                <SelectContent>
+                  {identities.map((i) => <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
             <div>
-              <div className="text-white font-medium">{selectedIdentity}</div>
-              <div className="text-gray-400 text-sm">Trabajando en: {selectedTask}</div>
+              <label className="mb-1.5 block text-xs uppercase tracking-wider text-muted-foreground">Misión</label>
+              <Select value={missionId} onValueChange={setMissionId}>
+                <SelectTrigger><SelectValue placeholder="Sin misión" /></SelectTrigger>
+                <SelectContent>
+                  {missions.filter(m => m.status !== "completed").map((m) => <SelectItem key={m.id} value={m.id}>{m.is_primary ? "★ " : ""}{m.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
             </div>
           </div>
-        </div>
 
-        {/* Controles */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {!isActive || isPaused ? (
-            <Button
-              className="bg-blue-500 hover:bg-blue-600 text-white"
-              onClick={isPaused ? resumeTimer : startTimer}
-            >
-              <Play className="w-5 h-5 mr-1" />
-              {isPaused ? 'Reanudar' : 'Iniciar'}
-            </Button>
-          ) : (
-            <Button
-              variant="outline"
-              onClick={pauseTimer}
-              className="bg-gray-700 text-white hover:bg-gray-600"
-            >
-              <Pause className="w-5 h-5 mr-1" />
-              Pausar
-            </Button>
-          )}
-          
-          <Button
-            variant="outline"
-            onClick={handleTakeBreak}
-            className="bg-gray-700 text-white hover:bg-gray-600"
-          >
-            <Coffee className="w-5 h-5 mr-1" />
-            Descanso
-          </Button>
-          
-          <Button
-            variant="destructive"
-            onClick={handleStopSession}
-          >
-            <Square className="w-5 h-5 mr-1" />
-            Finalizar
-          </Button>
-        </div>
-
-        {/* Estadísticas de la Sesión */}
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-          <h3 className="text-white font-medium mb-3">Estadísticas</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-gray-400 text-sm">Tiempo Transcurrido</div>
-              <div className="text-white font-medium">
-                {formatTime((duration * 60) - timeLeft)}
+          {/* Pomodoro circular */}
+          <div className="my-10 flex flex-col items-center">
+            <div className="relative">
+              <svg width="280" height="280" className="-rotate-90">
+                <circle cx="140" cy="140" r="120" stroke="hsl(var(--muted))" strokeWidth="8" fill="none" opacity="0.3" />
+                <circle
+                  cx="140" cy="140" r="120"
+                  stroke="url(#focusGrad)"
+                  strokeWidth="10" fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={2 * Math.PI * 120}
+                  strokeDashoffset={2 * Math.PI * 120 - (progress / 100) * 2 * Math.PI * 120}
+                  className="transition-[stroke-dashoffset] duration-1000 ease-linear"
+                />
+                <defs>
+                  <linearGradient id="focusGrad">
+                    <stop offset="0%" stopColor="hsl(var(--primary))" />
+                    <stop offset="100%" stopColor="hsl(var(--accent))" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                {activeIdentity && (
+                  <div className="mb-3"><IdentityAvatar name={activeIdentity.name} color={activeIdentity.color} status={activeIdentity.status} /></div>
+                )}
+                <div className="font-display text-6xl font-bold tabular-nums">{mm}:{ss}</div>
+                <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">{running ? "En foco" : "Listo para empezar"}</div>
               </div>
             </div>
-            <div>
-              <div className="text-gray-400 text-sm">Tiempo Restante</div>
-              <div className="text-white font-medium">
-                {formatTime(timeLeft)}
-              </div>
+
+            {/* Selector de duración */}
+            <div className="mt-8 flex flex-wrap justify-center gap-2">
+              {[15, 25, 45, 60].map((d) => (
+                <Button key={d} size="sm" variant={duration === d ? "default" : "outline"} onClick={() => { setDuration(d); }} disabled={running}>{d} min</Button>
+              ))}
+            </div>
+
+            <div className="mt-6 flex items-center gap-3">
+              <Button size="lg" variant="outline" onClick={reset} disabled={!running && secondsLeft === duration * 60}><RotateCcw className="h-4 w-4" /></Button>
+              <Button size="lg" className="h-14 gap-2 px-8 bg-gradient-emerald text-primary-foreground hover:opacity-90" onClick={() => setRunning((r) => !r)}>
+                {running ? <><Pause className="h-5 w-5" /> Pausar</> : <><Play className="h-5 w-5" /> {secondsLeft === duration * 60 ? "Empezar" : "Reanudar"}</>}
+              </Button>
+              <Button size="lg" variant="outline" onClick={enable} title="Pausa privada"><EyeOff className="h-4 w-4" /></Button>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </GlassCard>
+
+        <p className="mt-4 text-center text-xs text-muted-foreground">
+          ¿Te interrumpen? Pulsa el ojo o usa <kbd className="rounded bg-muted px-1.5 py-0.5">Shift</kbd> + <kbd className="rounded bg-muted px-1.5 py-0.5">Esc</kbd> para activar Pausa privada.
+        </p>
+      </div>
+    </Layout>
   );
-};
-
-export default Focus;
+}
