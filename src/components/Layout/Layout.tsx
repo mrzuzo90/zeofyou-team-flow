@@ -4,6 +4,8 @@ import { AppSidebar } from "./AppSidebar";
 import { BottomNav } from "./BottomNav";
 import { TopBar } from "./TopBar";
 import { PrivacyShield } from "@/components/UI/PrivacyShield";
+import { useCurrentMode } from "@/hooks/useCurrentMode";
+import { useModeSuggestion } from "@/hooks/useModeSuggestion";
 
 export const Layout = ({ children, title, subtitle }: { children: ReactNode; title: string; subtitle?: string }) => (
   <SidebarProvider defaultOpen>
