@@ -122,6 +122,12 @@ export default function Dashboard() {
         </motion.div>
       )}
 
+      {/* Acción de 2 minutos */}
+      <section className="mt-5">
+        <TwoMinWidget />
+      </section>
+
+
       {/* Equipo */}
       <section className="mt-8">
         <div className="mb-4 flex items-center justify-between">
