@@ -130,10 +130,10 @@ export function AuroraCanvas() {
     const applyTheme = () => {
       const light = document.documentElement.dataset.theme === "light";
       if (light) {
-        gl.uniform3f(uBg, 0.97, 0.975, 0.99);
-        gl.uniform1f(uMix, 0.18);
-        canvas.style.opacity = "0.55";
-        canvas.style.mixBlendMode = "multiply";
+        gl.uniform3f(uBg, 1.0, 1.0, 1.0);
+        gl.uniform1f(uMix, 0.12);
+        canvas.style.opacity = "0.22";
+        canvas.style.mixBlendMode = "screen";
       } else {
         gl.uniform3f(uBg, 0.06, 0.065, 0.10);
         gl.uniform1f(uMix, 0.55);
