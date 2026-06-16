@@ -1,0 +1,15 @@
+# Zeofyou
+
+> Zeofyou es un sistema de gestión personal que coordina tus "identidades internas" como un equipo. Te ayuda a equilibrar trabajo, descanso, familia y proyectos personales con misiones, sesiones de focus, modos contextuales y check-ins de energía.
+
+Zeofyou combina misiones (cortas y de largo plazo con progreso 0-100), un cronómetro de focus tipo pomodoro vinculado a identidades, modos contextuales (Trabajo, Casa, Familia, Viaje) con rituales de transición, y reflexión semanal asistida por IA.
+
+## Pages
+
+- [Inicio](/): Resumen del día, misión principal y energía del equipo interno.
+- [Iniciar sesión](/login): Acceso a la cuenta de Zeofyou.
+- [Crear cuenta](/signup): Registro y onboarding guiado por IA.
+
+## Optional
+
+- [Términos y privacidad](/perfil): Configuración personal (requiere sesión).
