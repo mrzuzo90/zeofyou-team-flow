@@ -14,6 +14,8 @@ export type Profile = {
   onboarding_completed: boolean;
   current_mode: "work" | "home" | "family" | "travel" | "none";
   mode_auto_suggest: boolean;
+  transition_ritual_enabled: boolean;
+  energy_checkin_enabled: boolean;
 };
 
 export const useProfile = () => {

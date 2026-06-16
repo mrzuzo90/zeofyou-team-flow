@@ -18,6 +18,8 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
+import Transition from "./pages/Transition";
+import HandsFree from "./pages/HandsFree";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { refetchOnWindowFocus: false, staleTime: 30_000 } },
@@ -44,6 +46,8 @@ const App = () => (
               <Route path="/planificacion" element={protect(<Planning />)} />
               <Route path="/insights" element={protect(<Insights />)} />
               <Route path="/perfil" element={protect(<Profile />)} />
+              <Route path="/transicion" element={protect(<Transition />)} />
+              <Route path="/manos-libres" element={protect(<HandsFree />)} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
