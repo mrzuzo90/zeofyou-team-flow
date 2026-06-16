@@ -25,13 +25,13 @@ export function useCurrentMode() {
   }, [mode]);
 
   /** Llama esto desde el selector para activar el ritual si procede. */
-  const setMode = (next: ModeKey, opts?: { skipRitual?: boolean }) => {
+  const setMode = async (next: ModeKey, opts?: { skipRitual?: boolean }) => {
     if (next === mode) return;
     if (ritualEnabled && !opts?.skipRitual && next !== "none" && mode !== "none") {
       nav(`/transicion?from=${mode}&to=${next}`);
       return;
     }
-    update.mutate({ current_mode: next } as any);
+    await update.mutateAsync({ current_mode: next } as any);
   };
 
   const setAutoSuggest = (v: boolean) => update.mutate({ mode_auto_suggest: v } as any);
