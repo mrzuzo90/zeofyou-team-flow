@@ -28,6 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { TiltCard } from "@/components/Motion/TiltCard";
 import { AnimatedNumber } from "@/components/Motion/AnimatedNumber";
 import { MagneticButton } from "@/components/Motion/MagneticButton";
+import { resolvePersona, personaCSSVars, personaFontClass } from "@/lib/personas";
 
 const PRIORITY_COLOR: Record<string, string> = {
   high: "bg-destructive/15 text-destructive",
