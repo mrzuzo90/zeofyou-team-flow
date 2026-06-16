@@ -14,6 +14,7 @@ export type Mission = {
   category: string | null;
   due_date: string | null;
   xp_reward: number;
+  context: "work" | "home" | "family" | "travel" | null;
 };
 
 export const useMissions = () => {
