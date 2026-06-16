@@ -17,6 +17,8 @@ const FRAG = /* glsl */ `
   uniform vec3 uA;
   uniform vec3 uB;
   uniform vec3 uC;
+  uniform vec3 uBg;
+  uniform float uMix;
 
   // 2D simplex noise — Ashima
   vec3 mod289(vec3 x) { return x - floor(x * (1.0/289.0)) * 289.0; }
@@ -64,14 +66,13 @@ const FRAG = /* glsl */ `
     vec3 col = uA * wA + uB * wB + uC * wC;
     col += uA * mouseGlow;
 
-    // Vignette + base oscuro
+    // Vignette suave (más ligera en claro)
     vec2 q = uv - 0.5;
     float vig = 1.0 - dot(q, q) * 1.4;
-    col *= vig;
+    col *= mix(1.0, vig, step(0.5, 1.0 - uBg.r));
 
-    // Mezcla con fondo profundo
-    vec3 bg = vec3(0.06, 0.065, 0.10);
-    col = mix(bg, col, 0.55);
+    // Mezcla con fondo del tema activo
+    col = mix(uBg, col, uMix);
 
     gl_FragColor = vec4(col, 1.0);
   }
