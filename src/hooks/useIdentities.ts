@@ -72,6 +72,8 @@ export const useCreateIdentity = () => {
         color: input.color ?? "emerald",
         status: input.status ?? "resting",
         energy: input.energy ?? 80,
+        persona: (input.persona as any) ?? null,
+        preferences: (input.preferences as any) ?? {},
       } as any);
       if (error) throw error;
     },
