@@ -36,12 +36,16 @@ export default function Missions() {
   const { data: allMissions = [] } = useMissions();
   const { data: identities = [] } = useIdentities();
   const { mode } = useCurrentMode();
+  const { user } = useAuth();
   const create = useCreateMission();
   const update = useUpdateMission();
   const del = useDeleteMission();
   const addXp = useAddXp();
+  const createMilestone = useCreateMilestone();
   const [open, setOpen] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [params, setParams] = useSearchParams();
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -56,6 +60,15 @@ export default function Missions() {
     progress_mode: "manual" as "manual" | "time",
   });
 
+  // ?new=1 abre directamente el formulario
+  useEffect(() => {
+    if (params.get("new") === "1") {
+      setOpen(true);
+      params.delete("new");
+      setParams(params, { replace: true });
+    }
+  }, [params, setParams]);
+
   // Filtro por modo: si hay modo activo (≠ none) y no se fuerza ver todo, ocultar las que tengan contexto distinto.
   const filterByMode = mode !== "none" && !showAll;
   const missions = filterByMode
@@ -66,6 +79,8 @@ export default function Missions() {
   const others = missions.filter((m) => m.id !== primary?.id);
   const locked = !!primary; // bloquea cambios en secundarias mientras hay principal activa
   const hiddenCount = allMissions.length - missions.length;
+
+  const resetForm = () => setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "", kind: "task", horizon: "month", target_hours: "", progress_mode: "manual" });
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,14 +99,56 @@ export default function Missions() {
       progress_mode: form.kind === "long_term" ? form.progress_mode : "manual",
     });
     setOpen(false);
-    setForm({ title: "", description: "", is_primary: false, priority: "medium", assigned_identity_id: "", xp_reward: 50, context: "", kind: "task", horizon: "month", target_hours: "", progress_mode: "manual" });
+    resetForm();
     toast.success("Misión creada");
+  };
+
+  const applyTemplate = async (t: MissionTemplate) => {
+    setTemplatesOpen(false);
+    // Crear misión long_term y sus hitos
+    const { data, error } = await (supabase as any).from("missions").insert({
+      user_id: user!.id,
+      title: t.title,
+      description: t.description,
+      priority: t.priority,
+      kind: "long_term",
+      horizon: t.horizon,
+      target_minutes: t.target_hours ? Math.round(t.target_hours * 60) : null,
+      progress_mode: t.progress_mode,
+      context: t.context ?? null,
+      xp_reward: 100,
+    }).select("id").single();
+    if (error) { toast.error("No se pudo crear la misión"); return; }
+    for (const title of t.milestones) {
+      await createMilestone.mutateAsync({ missionId: data.id, title });
+    }
+    toast.success(`Plantilla "${t.name}" aplicada`);
   };
 
   const complete = async (m: Mission) => {
     await update.mutateAsync({ id: m.id, patch: { status: "completed" } });
     await addXp.mutateAsync(m.xp_reward);
+    celebrate();
     toast.success(`+${m.xp_reward} XP`);
+  };
+
+  const handleDelete = (m: Mission) => {
+    const snapshot = m;
+    del.mutate(m.id);
+    toast("Misión eliminada", {
+      action: {
+        label: "Deshacer",
+        onClick: async () => {
+          await (supabase as any).from("missions").insert({
+            ...snapshot,
+            id: undefined,
+            created_at: undefined,
+            updated_at: undefined,
+          });
+          toast.success("Restaurada");
+        },
+      },
+    });
   };
 
   const toggleStatus = (m: Mission) => {
