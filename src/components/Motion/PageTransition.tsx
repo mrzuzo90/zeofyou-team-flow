@@ -30,7 +30,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
           initial="initial"
           animate="exit"
           exit="animate"
-          className="pointer-events-none fixed inset-0 z-[60] bg-gradient-aurora"
+          className="pointer-events-none fixed inset-0 z-[60] bg-gradient-aurora opacity-40 mix-blend-overlay"
           aria-hidden
         />
       </motion.div>

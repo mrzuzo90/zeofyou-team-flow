@@ -1,5 +1,6 @@
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Home, Users, Target, Timer, BarChart3, Calendar, LogOut, Settings } from "lucide-react";
+import { motion, LayoutGroup } from "framer-motion";
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +16,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { XPBar } from "@/components/UI/XPBar";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const items = [
   { to: "/", label: "Dinámica", icon: Home, end: true },
@@ -48,21 +50,54 @@ export const AppSidebar = () => {
       <SidebarContent className="px-2 py-4">
         <SidebarGroup>
           <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((it) => {
-                const active = it.end ? pathname === it.to : pathname.startsWith(it.to);
-                return (
-                  <SidebarMenuItem key={it.to}>
-                    <SidebarMenuButton asChild isActive={active} className="h-11">
-                      <NavLink to={it.to} className="flex items-center gap-3">
-                        <it.icon className="h-5 w-5" />
-                        <span>{it.label}</span>
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
+            <LayoutGroup id="sidebar-nav">
+              <SidebarMenu>
+                {items.map((it) => {
+                  const active = it.end ? pathname === it.to : pathname.startsWith(it.to);
+                  return (
+                    <SidebarMenuItem key={it.to}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={active}
+                        className="h-11 relative overflow-visible data-[active=true]:bg-transparent"
+                      >
+                        <NavLink
+                          to={it.to}
+                          className={cn(
+                            "group/nav relative flex items-center gap-3 rounded-md transition-colors",
+                            active ? "text-primary-foreground" : "text-foreground/80 hover:text-foreground",
+                          )}
+                        >
+                          {active && (
+                            <>
+                              <motion.span
+                                layoutId="sidebar-active-bg"
+                                className="absolute inset-0 -z-10 rounded-md bg-gradient-aurora opacity-90"
+                                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                                aria-hidden
+                              />
+                              <motion.span
+                                layoutId="sidebar-active-glow"
+                                className="absolute -inset-1 -z-20 rounded-lg bg-gradient-aurora opacity-40 blur-xl"
+                                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                                aria-hidden
+                              />
+                            </>
+                          )}
+                          <it.icon
+                            className={cn(
+                              "h-5 w-5 transition-transform duration-300",
+                              "group-hover/nav:scale-110 group-hover/nav:-rotate-3",
+                            )}
+                          />
+                          <span className="font-medium">{it.label}</span>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </LayoutGroup>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
