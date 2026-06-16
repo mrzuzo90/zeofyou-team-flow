@@ -1,156 +1,74 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { lovable } from "@/integrations/lovable/index";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { GlassCard } from "@/components/UI/GlassCard";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Input } from '../components/ui/input';
-import { Button } from '../components/ui/button';
-import { useApp } from '../contexts/AppContext';
-import { Users } from 'lucide-react';
+export default function Signup() {
+  const nav = useNavigate();
+  const { signUp } = useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-const Signup = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const { login } = useApp();
-  const navigate = useNavigate();
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      alert('Las contraseñas no coinciden');
-      return;
-    }
-    login(email, password);
-    navigate('/');
+    setLoading(true);
+    const { error } = await signUp(email, password, name);
+    setLoading(false);
+    if (error) return toast.error(error.message);
+    toast.success("¡Bienvenido a Zeofyou!");
+    nav("/bienvenida");
+  };
+
+  const google = async () => {
+    const r = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    if (r.error) toast.error("Error con Google");
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 flex items-center justify-center px-4 py-8">
-      <div className="max-w-md w-full">
-        {/* Logo y Título */}
-        <div className="text-center mb-8">
-          <div className="bg-blue-500/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Users className="w-10 h-10 text-blue-400" />
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Zeofyou</h1>
-          <p className="text-gray-400">Crea tu cuenta y comienza a gestionar tu equipo mental</p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-hero px-4 py-8">
+      <GlassCard className="w-full max-w-md p-8">
+        <div className="mb-8 text-center">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-emerald text-2xl font-display font-bold text-primary-foreground shadow-glow-emerald">Z</div>
+          <h1 className="font-display text-2xl font-bold">Crea tu cuenta</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Empieza a coordinar tu equipo interno</p>
         </div>
 
-        {/* Formulario */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <h2 className="text-xl font-semibold text-white mb-6 text-center">
-            Crear Cuenta
-          </h2>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Nombre Completo
-              </label>
-              <Input
-                type="text"
-                placeholder="Ingresa tu nombre completo"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Correo Electrónico
-              </label>
-              <Input
-                type="email"
-                placeholder="Ingresa tu email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Contraseña
-              </label>
-              <Input
-                type="password"
-                placeholder="Crea una contraseña segura"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
-                Confirmar Contraseña
-              </label>
-              <Input
-                type="password"
-                placeholder="Confirma tu contraseña"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            
-            <div className="text-sm">
-              <label className="flex items-start text-gray-400">
-                <input type="checkbox" className="mr-2 mt-1 rounded" required />
-                <span>
-                  Acepto los{' '}
-                  <Link to="/terms" className="text-blue-400 hover:text-blue-300">
-                    Términos de Servicio
-                  </Link>{' '}
-                  y{' '}
-                  <Link to="/privacy" className="text-blue-400 hover:text-blue-300">
-                    Política de Privacidad
-                  </Link>
-                </span>
-              </label>
-            </div>
-            
-            <Button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900">
-              Crear Cuenta
-            </Button>
-          </form>
-          
-          <div className="mt-6 text-center">
-            <span className="text-gray-400">¿Ya tienes cuenta? </span>
-            <Link to="/login" className="text-blue-400 hover:text-blue-300 font-medium">
-              Inicia sesión
-            </Link>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="name">Cómo te llamamos</Label>
+            <Input id="name" required value={name} onChange={(e) => setName(e.target.value)} placeholder="Tu nombre" />
           </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="password">Contraseña</Label>
+            <Input id="password" type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mínimo 6 caracteres" />
+          </div>
+          <Button type="submit" disabled={loading} className="w-full bg-gradient-emerald font-semibold text-primary-foreground hover:opacity-90">
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Crear cuenta"}
+          </Button>
+        </form>
+
+        <div className="my-6 flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="h-px flex-1 bg-border" />o<div className="h-px flex-1 bg-border" />
         </div>
 
-        {/* Beneficios */}
-        <div className="mt-8">
-          <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-            <h3 className="text-white font-medium mb-3 text-center">¿Por qué Zeofyou?</h3>
-            <div className="space-y-2 text-sm text-gray-400">
-              <div className="flex items-center">
-                <span className="text-green-400 mr-2">✓</span>
-                Gestiona tus identidades internas como un equipo
-              </div>
-              <div className="flex items-center">
-                <span className="text-green-400 mr-2">✓</span>
-                Mejora tu productividad y enfoque
-              </div>
-              <div className="flex items-center">
-                <span className="text-green-400 mr-2">✓</span>
-                Obtén insights sobre tus patrones mentales
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        <Button variant="outline" className="w-full" onClick={google}>Continuar con Google</Button>
+
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          ¿Ya tienes cuenta? <Link to="/login" className="text-primary hover:underline">Inicia sesión</Link>
+        </p>
+      </GlassCard>
     </div>
   );
-};
-
-export default Signup;
+}
