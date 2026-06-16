@@ -73,7 +73,7 @@ export default function Focus() {
   const activeIdentity = useMemo(() => identities.find((i) => i.id === identityId), [identities, identityId]);
 
   return (
-    <Layout title="Focus" subtitle="Una identidad, una misión, un bloque de tiempo">
+    <Layout title="Focus" subtitle="Una identidad, una misión, un bloque de tiempo" seo={{ title: "Focus · sesión profunda | Zeofyou", description: "Entra en focus con una identidad y una misión: pomodoros, modo privacidad y registro automático.", path: "/enfoque" }}>
       <div className="mx-auto max-w-2xl">
         <GlassCard glow="emerald" className="p-6 md:p-10">
           {/* Selectores */}

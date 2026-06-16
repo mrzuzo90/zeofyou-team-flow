@@ -62,7 +62,7 @@ export default function Profile() {
   const { level, current, needed } = xpProgress(profile?.xp ?? 0);
 
   return (
-    <Layout title="Perfil" subtitle="Tu nivel, tus logros y tus preferencias">
+    <Layout title="Perfil" subtitle="Tu nivel, tus logros y tus preferencias" seo={{ title: "Perfil y preferencias | Zeofyou", description: "Revisa tu nivel, logros desbloqueados y configura las preferencias de Zeofyou.", path: "/perfil" }}>
       <div className="grid gap-5 lg:grid-cols-3">
         <GlassCard glow="emerald" className="p-6 lg:col-span-2">
           <div className="flex items-center gap-5">

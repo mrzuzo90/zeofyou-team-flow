@@ -43,7 +43,7 @@ export default function Identities() {
   };
 
   return (
-    <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades">
+    <Layout title="Tu equipo interno" subtitle="Activa, pausa o crea nuevas identidades" seo={{ title: "Identidades internas | Zeofyou", description: "Gestiona tus identidades internas: activa, pausa o crea nuevos roles dentro de tu equipo mental.", path: "/identidades" }}>
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3 text-xs">
           <span className="rounded-full bg-success/10 px-2.5 py-1 text-success">● {identities.filter(i => i.status === "active").length} activos</span>

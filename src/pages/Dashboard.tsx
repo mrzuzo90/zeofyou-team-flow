@@ -44,7 +44,7 @@ export default function Dashboard() {
   })();
 
   return (
-    <Layout title={`${greeting}, ${profile?.display_name ?? "tú"}`} subtitle={mode === "none" ? "Así está hoy tu equipo" : `Modo ${currentMode.label} · ${currentMode.description}`}>
+    <Layout title={`Panel · ${greeting}, ${profile?.display_name ?? "tú"}`} subtitle={mode === "none" ? "Así está hoy tu equipo" : `Modo ${currentMode.label} · ${currentMode.description}`} seo={{ title: "Panel de control | Zeofyou", description: "Tu equipo interno de un vistazo: misión principal, energía del equipo y focus del día.", path: "/" }}>
       <div className="grid gap-5 lg:grid-cols-3">
         {/* HERO con misión principal */}
         <GlassCard glow="emerald" className="lg:col-span-2 overflow-hidden p-0">
