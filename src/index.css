@@ -504,10 +504,10 @@
     --accent: 14 82% 48%;
     --ring: 24 88% 44%;
     --gradient-emerald: linear-gradient(135deg, hsl(24 88% 44%), hsl(14 82% 50%));
-    --gradient-hero: radial-gradient(ellipse at top, hsl(28 92% 70% / 0.28), transparent 60%),
-                     radial-gradient(ellipse at bottom right, hsl(14 85% 70% / 0.22), transparent 60%),
-                     linear-gradient(180deg, hsl(36 50% 98%), hsl(30 40% 95%));
-    --shadow-glow-emerald: 0 0 40px -8px hsl(28 92% 55% / 0.4);
+    --gradient-hero: radial-gradient(ellipse at top, hsl(28 92% 70% / 0.08), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(14 85% 70% / 0.06), transparent 60%),
+                     linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 100%));
+    --shadow-glow-emerald: 0 0 40px -8px hsl(28 92% 55% / 0.3);
     --sidebar-primary: 24 88% 44%;
     --sidebar-ring: 24 88% 44%;
   }
@@ -519,10 +519,10 @@
     --accent: 320 65% 50%;
     --ring: 268 65% 48%;
     --gradient-emerald: linear-gradient(135deg, hsl(268 65% 48%), hsl(320 65% 52%));
-    --gradient-hero: radial-gradient(ellipse at top, hsl(268 80% 80% / 0.3), transparent 60%),
-                     radial-gradient(ellipse at bottom right, hsl(320 75% 80% / 0.22), transparent 60%),
-                     linear-gradient(180deg, hsl(280 40% 98%), hsl(280 35% 95%));
-    --shadow-glow-emerald: 0 0 40px -8px hsl(268 80% 55% / 0.35);
+    --gradient-hero: radial-gradient(ellipse at top, hsl(268 80% 80% / 0.08), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(320 75% 80% / 0.06), transparent 60%),
+                     linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 100%));
+    --shadow-glow-emerald: 0 0 40px -8px hsl(268 80% 55% / 0.3);
     --sidebar-primary: 268 65% 48%;
     --sidebar-ring: 268 65% 48%;
   }
@@ -534,10 +534,10 @@
     --accent: 180 70% 38%;
     --ring: 200 85% 42%;
     --gradient-emerald: linear-gradient(135deg, hsl(200 85% 42%), hsl(180 70% 42%));
-    --gradient-hero: radial-gradient(ellipse at top, hsl(200 80% 75% / 0.3), transparent 60%),
-                     radial-gradient(ellipse at bottom right, hsl(180 75% 75% / 0.22), transparent 60%),
-                     linear-gradient(180deg, hsl(200 45% 98%), hsl(200 40% 95%));
-    --shadow-glow-emerald: 0 0 40px -8px hsl(200 85% 50% / 0.35);
+    --gradient-hero: radial-gradient(ellipse at top, hsl(200 80% 75% / 0.08), transparent 60%),
+                     radial-gradient(ellipse at bottom right, hsl(180 75% 75% / 0.06), transparent 60%),
+                     linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 100%));
+    --shadow-glow-emerald: 0 0 40px -8px hsl(200 85% 50% / 0.3);
     --sidebar-primary: 200 85% 42%;
     --sidebar-ring: 200 85% 42%;
   }
